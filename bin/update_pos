@@ -1,0 +1,199 @@
+#!/bin/sh
+#
+# This script scans the skins directory and merge the differences.
+# It updates the pot/pos files inside the directories.
+# The custom.pot file is being merged too.
+#
+# This script relies on the GNU Internationalization utilities, so make sure you
+# have the gettext package (or equivalent) on your system.
+#
+# Usage:
+# update_pos [options]
+#
+#   -v, --verbose
+#     print messages and debug information during po file processing.
+#
+# Authors:
+# Julien Anguenot <ja@nuxeo.com>
+# M.-A. DARCHE <madarche@nuxeo.com>
+# Encolpe Degoute <edegoute@nuxeo.com>
+#
+# $Id$
+
+if [ ! $Z_NAME ]; then
+    ECHO=echo
+    PWD=pwd
+    RM=rm
+    GREP=grep
+else
+    . /usr/local/nuxeo/bin/inc.sh
+fi
+
+verbose=$1
+
+# Take the .config.pot from the make_pot
+# to get the name of the pot file choosen by
+# the user.
+get_pot_name() {
+    POT_FILE_NAME=`$GREP pot ./.config.pot`
+}
+
+# This optional file may be used to eliminate duplicate translations with
+# CPSDefault or other products such as CPSSchemas, etc. when a product overide
+# some templates. To activate this functionality, you just need to have a
+# .blacklist_pot file in your i18n directory.
+#
+# This file may have multiple lines. Each line of this file must be the path to
+# the xxx.pot file of a product.
+BLACKLIST_POT_FILE_NAME='.blacklist_pot'
+
+
+###############
+#    MAIN
+###############
+
+$ECHO
+$ECHO "###################################################################"
+$ECHO "### update_pos : Updating the pot/pos files from ZPT's and Custom  "
+$ECHO "###################################################################"
+$ECHO
+
+if [[ -n $verbose ]]; then
+    $ECHO "ZHOME/Z_NAME = $ZHOME/$Z_NAME"
+    $ECHO "PRODUCTS_DIR = $PRODUCTS_DIR"
+fi
+
+if [ -x $ZHOME/$Z_NAME/bin/python ]; then
+    PYTHON_BIN=$ZHOME/$Z_NAME/bin/python
+else
+    PYTHON_BIN=`which python`
+fi
+
+# PRODUCTS_DIR is the only necessary variable that this script needs to get
+if [ -z $PRODUCTS_DIR ]; then
+    if [ -d $ZHOME/$Z_NAME/Products ]; then
+        PRODUCTS_DIR=$ZHOME/$Z_NAME/Products
+    else
+        PRODUCTS_DIR=`$PWD`/../..
+    fi
+    if [ -n $verbose ]; then
+        $ECHO "Computed PRODUCTS_DIR = $PRODUCTS_DIR"
+    fi
+fi
+
+if [ ! -d $PRODUCTS_DIR/OpenPTi18n ]; then
+    $ECHO "You must install OpenPTi18n in your Products directory"
+    exit 1
+else
+    PARSER_SCRIPT=$PRODUCTS_DIR/OpenPTi18n/i18n_xgettext.py
+    # Checking if we are in the i18n directory
+    $PWD | grep "i18n" >> /dev/null
+    if [ $? -eq 1 ] ; then
+        $ECHO "update_pos **needs** to be executed within the i18n directory"
+        exit 1
+    else
+        $PWD | grep "i18n/" >> /dev/null
+        if [ $? -eq 0 ] ; then
+            $ECHO "update_pos **needs** to be executed within the i18n directory"
+            exit 1
+        else
+            SKINS_PATH="../skins/"
+
+            $ECHO "###################################"
+            $ECHO "### update_pos: Merging changes    "
+            $ECHO "###################################"
+            $ECHO
+
+            #
+            # Checking the user custom.pot file
+            #
+            msgconv custom.pot >> /dev/null
+            if [ $? -eq 1 ] ; then
+                $ECHO
+                $ECHO "##############################################"
+                $ECHO "Your custom file is not correct !!"
+                $ECHO "Check the above logs !"
+                $ECHO "Correct the errors and relaunch the program"
+                $ECHO "##############################################"
+                $ECHO
+                exit 1
+            fi
+
+            #
+            # Generating the default.pot file from the ZPTs
+            #
+            $PYTHON_BIN $PARSER_SCRIPT $SKINS_PATH
+
+            #
+            # Checking the ZPT's file is good
+            #
+            msgconv default.pot >> /dev/null
+            if [ $? -eq 1 ] ; then
+                $ECHO
+                $ECHO "##############################################"
+                $ECHO "The ZPT's have some problems !!              "
+                $ECHO "Check them in debug mode "
+                $ECHO "Cf. make_pot"
+                $ECHO
+                exit 1
+            fi
+
+            #
+            # Changing the xxxproduct.pot
+            #
+            get_pot_name
+            chmod a+w $POT_FILE_NAME
+            $RM $POT_FILE_NAME
+
+            $ECHO "###########################################################" >> $POT_FILE_NAME
+            $ECHO "################## DON'T EDIT THIS FILE! ##################" >> $POT_FILE_NAME
+            $ECHO "###########################################################" >> $POT_FILE_NAME
+            cat default.pot >> $POT_FILE_NAME
+            $RM default.pot
+
+            # Reading each line of the file with name
+            # BLACKLIST_POT_FILE_NAME to find all the files which we want
+            # to purge duplicates from.
+            #
+            # The BLACKLIST_POT_FILE_NAME is an optional file, so we must
+            # test that the file exists and is readable before trying to use it.
+            if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
+              $ECHO "############################################################"
+              $ECHO "### Purging duplicates using file $BLACKLIST_POT_FILE_NAME"
+              $ECHO "############################################################"
+              PURGED_POT_FILE_NAME="$POT_FILE_NAME.purged"
+              while read line; do
+                EXISTING_POT_FILE_NAME=$line
+                if [[ -n $EXISTING_POT_FILE_NAME ]]; then
+                    $ECHO "Purging duplicates from file $EXISTING_POT_FILE_NAME..."
+                    msgattrib --only-file=$EXISTING_POT_FILE_NAME \
+                    --set-obsolete -no-obsolete -o $PURGED_POT_FILE_NAME $POT_FILE_NAME
+                    mv $PURGED_POT_FILE_NAME $POT_FILE_NAME
+                fi
+              done < $BLACKLIST_POT_FILE_NAME
+              $ECHO
+            fi
+
+            #
+            # Concatenate the custom and the already existing pot
+            #
+            msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
+
+            chmod a-w $POT_FILE_NAME
+
+            #
+            # Merging the po files with the new pot template
+            #
+            ls *.po | while read po_file ; do
+		if [[ -n $verbose ]]; then
+                    msgmerge $po_file $POT_FILE_NAME -o $po_file
+		else
+                    msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
+		fi
+            done
+
+            # OKOKOKOKOK ;)
+            exit 0
+        fi
+    fi
+fi
