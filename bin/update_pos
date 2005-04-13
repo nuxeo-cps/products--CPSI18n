@@ -149,7 +149,7 @@ else
                 $ECHO "##############################################"
                 $ECHO "Your custom.pot file is not well-formed!"
                 $ECHO "Check file custom.pot"
-                $ECHO "Correct the errors and relaunch the program"
+                $ECHO "Correct the errors and rerun $prog_name"
                 $ECHO "##############################################"
                 $ECHO
                 exit 1
@@ -169,7 +169,7 @@ else
                 $ECHO "Some ZPT files have some problems!"
                 $ECHO "Check file $POT_FILE_NAME"
                 $ECHO "Check also ZPT files in verbose/debug mode"
-                $ECHO "Correct the errors and relaunch the program"
+                $ECHO "Correct the errors and rerun $prog_name"
                 $ECHO "##############################################"
                 $ECHO
                 exit 1
@@ -218,7 +218,7 @@ else
                 if [ $? -eq 1 ] ; then
                     $ECHO "##############################################"
                     $ECHO "The $po_file has problems!"
-                    $ECHO "Correct the errors and relaunch the program"
+                    $ECHO "Correct the errors and rerun $prog_name"
                     $ECHO "##############################################"
                     $ECHO
                     exit 1
