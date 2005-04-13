@@ -143,18 +143,6 @@ else
               $ECHO
             fi
 
-            # Checking the user custom.pot file well-formedness
-            msgconv custom.pot >> /dev/null
-            if [ $? -eq 1 ] ; then
-                $ECHO "##############################################"
-                $ECHO "Your custom.pot file is not well-formed!"
-                $ECHO "Check file custom.pot"
-                $ECHO "Correct the errors and rerun $prog_name"
-                $ECHO "##############################################"
-                $ECHO
-                exit 1
-            fi
-
             # Generating the .pot file from the ZPTs.
             # Getting the file name to use from the product's configuration
             # file. This file name is $POT_FILE_NAME
@@ -201,8 +189,21 @@ else
               done < $BLACKLIST_POT_FILE_NAME
             fi
 
-            # Concatenate the custom pot file and the pot file coming from the ZPTs
-            msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
+            if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
+            # Checking the user custom.pot file well-formedness
+                msgconv custom.pot >> /dev/null
+                if [ $? -eq 1 ] ; then
+                    $ECHO "##############################################"
+                    $ECHO "Your custom.pot file is not well-formed!"
+                    $ECHO "Check file custom.pot"
+                    $ECHO "Correct the errors and rerun $prog_name"
+                    $ECHO "##############################################"
+                    $ECHO
+                    exit 1
+                fi
+                # Concatenate the custom pot file and the pot file coming from the ZPTs
+                msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
+            fi
 
             chmod a-w $POT_FILE_NAME
 
