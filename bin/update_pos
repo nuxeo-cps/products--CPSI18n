@@ -88,13 +88,10 @@ BLACKLIST_POT_FILE_NAME='.blacklist_pot'
 #    MAIN
 ###############
 
-$ECHO
-$ECHO "###################################################################"
-$ECHO "### update_pos : Updating the pot/pos files from ZPT's and Custom  "
-$ECHO "###################################################################"
-$ECHO
-
 if [[ -n $verbose ]]; then
+    $ECHO "################################################"
+    $ECHO "### Environment variables"
+    $ECHO "################################################"
     $ECHO "ZHOME/Z_NAME = $ZHOME/$Z_NAME"
     $ECHO "PRODUCTS_DIR = $PRODUCTS_DIR"
 fi
@@ -135,10 +132,12 @@ else
         else
             SKINS_PATH="../skins/"
 
-            $ECHO "################################################"
-            $ECHO "### Checking .pot and .po files well-formedness"
-            $ECHO "################################################"
-            $ECHO
+            if [[ -n $verbose ]]; then
+              $ECHO "################################################"
+              $ECHO "### Checking .pot and .po files well-formedness"
+              $ECHO "################################################"
+              $ECHO
+	    fi
 
             # Checking the user custom.pot file well-formedness
             msgconv custom.pot >> /dev/null
@@ -203,8 +202,14 @@ else
             chmod a-w $POT_FILE_NAME
 
             # Merging the po files with the new pot template
+            if [[ -n $verbose ]]; then
+                $ECHO "##################################################################"
+                $ECHO "Updating the final *.po files that will be used by the application"
+                $ECHO "##################################################################"
+            fi
             ls *.po | while read po_file ; do
-		if [[ -n $verbose ]]; then
+                if [[ -n $verbose ]]; then
+                    $ECHO "Merging $po_file with $POT_FILE_NAME"
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
 		else
                     msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
