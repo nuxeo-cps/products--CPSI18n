@@ -12,7 +12,7 @@ usage="Usage:
 $prog_name [options]
 
   -h, --help
-     print help message and exit.  
+     print help message and exit.
 
   -v, --verbose
      print messages and debug information during po file processing.
@@ -141,7 +141,7 @@ else
               $ECHO "### Checking .pot and .po files well-formedness"
               $ECHO "################################################"
               $ECHO
-	    fi
+            fi
 
             # Checking the user custom.pot file well-formedness
             msgconv custom.pot >> /dev/null
@@ -227,9 +227,9 @@ else
                 if [[ -n $verbose ]]; then
                     $ECHO "Merging $po_file with $POT_FILE_NAME"
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
-		else
+                else
                     msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
-		fi
+                fi
                 # Replacing possible fuzzy translations from final .po file with
                 # translations from the reference translations (which are en and
                 # fr translations at the moment) so that we only end up with
@@ -262,7 +262,7 @@ else
                         # language instead.
                         msgattrib --only-file=$fuzzy_po --set-fuzzy --clear-obsolete -o $po_file $with_reference_trans_po
                         $RM -f $fuzzy_po $purged_po $with_reference_trans_po
-		    fi
+                    fi
                 fi
             done
 
