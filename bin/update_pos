@@ -23,9 +23,10 @@ echo "
 $usage
 This script scans the skins directory for ZPT files to find strings to
 translate. It updates the pot/pos files inside the i18n directory of the product
-in which the script is run.
+in which the script is run. Afterward one can then safely and very easily
+update the *.po files for untranslated messages.
 
-This script relies on the following software, so make sur they are installed on
+This script relies on the following software, so make sure they are installed on
 your system and available for $prog_name:
 
   * the GNU Internationalization utilities,
@@ -134,57 +135,44 @@ else
         else
             SKINS_PATH="../skins/"
 
-            $ECHO "###################################"
-            $ECHO "### update_pos: Merging changes    "
-            $ECHO "###################################"
+            $ECHO "################################################"
+            $ECHO "### Checking .pot and .po files well-formedness"
+            $ECHO "################################################"
             $ECHO
 
-            #
-            # Checking the user custom.pot file
-            #
+            # Checking the user custom.pot file well-formedness
             msgconv custom.pot >> /dev/null
             if [ $? -eq 1 ] ; then
                 $ECHO
                 $ECHO "##############################################"
-                $ECHO "Your custom file is not correct !!"
-                $ECHO "Check the above logs !"
+                $ECHO "Your custom.pot file is not well-formed!"
+                $ECHO "Check file custom.pot"
                 $ECHO "Correct the errors and relaunch the program"
                 $ECHO "##############################################"
                 $ECHO
                 exit 1
             fi
 
-            #
-            # Generating the default.pot file from the ZPTs
-            #
-            $PYTHON_BIN $PARSER_SCRIPT $SKINS_PATH
+            # Generating the .pot file from the ZPTs.
+            # Getting the file name to use from the product's configuration
+            # file. This file name is $POT_FILE_NAME
+            get_pot_name
+            chmod a+w $POT_FILE_NAME
+            $PYTHON_BIN $PARSER_SCRIPT -o $POT_FILE_NAME $SKINS_PATH
 
-            #
-            # Checking the ZPT's file is good
-            #
-            msgconv default.pot >> /dev/null
+            # Checking the ZPT's file well-formedness
+            msgconv $POT_FILE_NAME >> /dev/null
             if [ $? -eq 1 ] ; then
                 $ECHO
                 $ECHO "##############################################"
-                $ECHO "The ZPT's have some problems !!              "
-                $ECHO "Check them in debug mode "
-                $ECHO "Cf. make_pot"
+                $ECHO "Some ZPT files have some problems!"
+                $ECHO "Check file $POT_FILE_NAME"
+                $ECHO "Check also ZPT files in verbose/debug mode"
+                $ECHO "Correct the errors and relaunch the program"
+                $ECHO "##############################################"
                 $ECHO
                 exit 1
             fi
-
-            #
-            # Changing the xxxproduct.pot
-            #
-            get_pot_name
-            chmod a+w $POT_FILE_NAME
-            $RM $POT_FILE_NAME
-
-            $ECHO "###########################################################" >> $POT_FILE_NAME
-            $ECHO "################## DON'T EDIT THIS FILE! ##################" >> $POT_FILE_NAME
-            $ECHO "###########################################################" >> $POT_FILE_NAME
-            cat default.pot >> $POT_FILE_NAME
-            $RM default.pot
 
             # Reading each line of the file with name
             # BLACKLIST_POT_FILE_NAME to find all the files which we want
@@ -209,16 +197,12 @@ else
               $ECHO
             fi
 
-            #
-            # Concatenate the custom and the already existing pot
-            #
+            # Concatenate the custom pot file and the pot file coming from the ZPTs
             msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
 
             chmod a-w $POT_FILE_NAME
 
-            #
             # Merging the po files with the new pot template
-            #
             ls *.po | while read po_file ; do
 		if [[ -n $verbose ]]; then
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
@@ -227,7 +211,6 @@ else
 		fi
             done
 
-            # OKOKOKOKOK ;)
             exit 0
         fi
     fi
