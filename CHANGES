@@ -6,8 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
-- Made update_pos able to process i18n of products which don't have a custom.pot
-  file, which is useful for CPSSkins for example.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
