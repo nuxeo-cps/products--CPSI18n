@@ -194,7 +194,9 @@ else
                     fi
                     msgattrib --only-file=$EXISTING_POT_FILE_NAME \
                     --set-obsolete --no-obsolete -o $PURGED_POT_FILE_NAME $POT_FILE_NAME
-                    mv $PURGED_POT_FILE_NAME $POT_FILE_NAME
+                    if [[ -r $PURGED_POT_FILE_NAME ]]; then
+                        mv $PURGED_POT_FILE_NAME $POT_FILE_NAME
+                    fi
                 fi
               done < $BLACKLIST_POT_FILE_NAME
             fi
