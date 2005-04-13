@@ -242,7 +242,7 @@ else
                 if [[ -r $po_reference_file ]] \
                    && [ $po_file != $po_reference_file ]; then
                     if [[ -n $verbose ]]; then
-                        $ECHO "Replacing possible fuzzy strings in $po_file by the translated messages from the $po_reference_file file"
+                        $ECHO "Replacing fuzzy translations in $po_file by the translations from the $po_reference_file file"
                     fi
                     # Keeping track of which messages have fuzzy translations by
                     # storing them in a dedicated file.
