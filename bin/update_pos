@@ -1,8 +1,8 @@
 #!/bin/sh
 # Copyright (c) 2003-2005 Nuxeo SARL <http://nuxeo.com>
 # Authors:
-# Julien Anguenot <ja@nuxeo.com>
 # M.-A. Darche <madarche@nuxeo.com>
+# Julien Anguenot <ja@nuxeo.com>
 # Encolpe Degoute <edegoute@nuxeo.com>
 #
 # $Id$
@@ -114,6 +114,10 @@ if [ -z $PRODUCTS_DIR ]; then
     fi
 fi
 
+if [ -n $verbose ]; then
+        $ECHO
+fi
+
 if [ ! -d $PRODUCTS_DIR/OpenPTi18n ]; then
     $ECHO "You must install OpenPTi18n in your Products directory"
     exit 1
@@ -180,20 +184,21 @@ else
             # The BLACKLIST_POT_FILE_NAME is an optional file, so we must
             # test that the file exists and is readable before trying to use it.
             if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
-              $ECHO "############################################################"
-              $ECHO "### Purging duplicates using file $BLACKLIST_POT_FILE_NAME"
-              $ECHO "############################################################"
               PURGED_POT_FILE_NAME="$POT_FILE_NAME.purged"
               while read line; do
                 EXISTING_POT_FILE_NAME=$line
                 if [[ -n $EXISTING_POT_FILE_NAME ]]; then
-                    $ECHO "Purging duplicates from file $EXISTING_POT_FILE_NAME..."
+                    if [[ -n $verbose ]]; then
+                        $ECHO "##################################################################"
+                        $ECHO "Purging duplicates from file $EXISTING_POT_FILE_NAME"
+                        $ECHO "##################################################################"
+                        $ECHO
+                    fi
                     msgattrib --only-file=$EXISTING_POT_FILE_NAME \
-                    --set-obsolete -no-obsolete -o $PURGED_POT_FILE_NAME $POT_FILE_NAME
+                    --set-obsolete --no-obsolete -o $PURGED_POT_FILE_NAME $POT_FILE_NAME
                     mv $PURGED_POT_FILE_NAME $POT_FILE_NAME
                 fi
               done < $BLACKLIST_POT_FILE_NAME
-              $ECHO
             fi
 
             # Concatenate the custom pot file and the pot file coming from the ZPTs
@@ -206,6 +211,7 @@ else
                 $ECHO "##################################################################"
                 $ECHO "Updating the final *.po files that will be used by the application"
                 $ECHO "##################################################################"
+                $ECHO
             fi
             ls *.po | while read po_file ; do
                 if [[ -n $verbose ]]; then
@@ -213,6 +219,37 @@ else
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
 		else
                     msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
+		fi
+                # Replacing possible fuzzy translations from final .po file with
+                # translations from the reference translations (which are en and
+                # fr translations at the moment) so that we only end up with
+                # meaningfull translations.
+                case $po_file in
+                    fr.po | mg.po | ro.po | it.po) po_reference_file=fr.po;;
+                    eu.po) po_reference_file=es.po;;
+                    *) po_reference_file=en.po;;
+                esac
+                if [[ -r $po_reference_file ]] \
+		   && [ $po_file != $po_reference_file ]; then
+                  if [[ -n $verbose ]]; then
+                      $ECHO "Replacing possible fuzzy strings in $po_file by the translated messages from the $po_reference_file file"
+		  fi
+                  # Keeping track of which messages have fuzzy translations by
+                  # storing them in a dedicated file.
+		  fuzzy_po="fuzzy_$po_file"
+                  msgattrib --only-fuzzy -o $fuzzy_po $po_file
+                  # Generating a file purged from fuzzy translations
+		  purged_po="purged_$po_file"
+                  msgattrib --no-fuzzy -o $purged_po $po_file
+                  # Augmenting the purged file with all the translations from
+                  # the po_reference_file.
+		  with_reference_trans_po="with_ref_trans_$po_file"
+		  msgmerge --no-fuzzy-matching -o $with_reference_trans_po $purged_po $po_reference_file 2>/dev/null
+                  # Marking back all the translations that are fuzzy for this
+                  # particular language so that the translators know that they
+                  # should provide translations in their own language instead.
+                  msgattrib --only-file=$fuzzy_po --set-fuzzy --clear-obsolete -o $po_file $with_reference_trans_po
+		  $RM $fuzzy_po $purged_po $with_reference_trans_po
 		fi
             done
 
