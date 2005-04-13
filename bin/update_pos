@@ -217,7 +217,7 @@ else
                 msgconv $po_file >> /dev/null
                 if [ $? -eq 1 ] ; then
                     $ECHO "##############################################"
-                    $ECHO "The $po_file has problems!"
+                    $ECHO "The file $po_file has problems!"
                     $ECHO "Correct the errors and rerun $prog_name"
                     $ECHO "##############################################"
                     $ECHO
