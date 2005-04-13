@@ -146,7 +146,6 @@ else
             # Checking the user custom.pot file well-formedness
             msgconv custom.pot >> /dev/null
             if [ $? -eq 1 ] ; then
-                $ECHO
                 $ECHO "##############################################"
                 $ECHO "Your custom.pot file is not well-formed!"
                 $ECHO "Check file custom.pot"
@@ -166,7 +165,6 @@ else
             # Checking the ZPT's file well-formedness
             msgconv $POT_FILE_NAME >> /dev/null
             if [ $? -eq 1 ] ; then
-                $ECHO
                 $ECHO "##############################################"
                 $ECHO "Some ZPT files have some problems!"
                 $ECHO "Check file $POT_FILE_NAME"
@@ -217,6 +215,15 @@ else
                 # Checking the final po file because someone might have corrupted
                 # it for example by inserting duplicate translations.
                 msgconv $po_file >> /dev/null
+                if [ $? -eq 1 ] ; then
+                    $ECHO "##############################################"
+                    $ECHO "The $po_file has problems!"
+                    $ECHO "Correct the errors and relaunch the program"
+                    $ECHO "##############################################"
+                    $ECHO
+                    exit 1
+                fi
+
                 if [[ -n $verbose ]]; then
                     $ECHO "Merging $po_file with $POT_FILE_NAME"
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
