@@ -11,6 +11,7 @@ New features:
 Bug fixes:
 ~~~~~~~~~~
 - Made the update_pos script more user-friendly with updated help messages.
+- Warning the user if a final po file is corrupted.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

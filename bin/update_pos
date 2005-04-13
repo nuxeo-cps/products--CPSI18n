@@ -214,6 +214,9 @@ else
                 $ECHO
             fi
             ls *.po | while read po_file ; do
+                # Checking the final po file because someone might have corrupted
+                # it for example by inserting duplicate translations.
+                msgconv $po_file >> /dev/null
                 if [[ -n $verbose ]]; then
                     $ECHO "Merging $po_file with $POT_FILE_NAME"
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
