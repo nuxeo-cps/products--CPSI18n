@@ -240,27 +240,30 @@ else
                     *) po_reference_file=en.po;;
                 esac
                 if [[ -r $po_reference_file ]] \
-		   && [ $po_file != $po_reference_file ]; then
-                  if [[ -n $verbose ]]; then
-                      $ECHO "Replacing possible fuzzy strings in $po_file by the translated messages from the $po_reference_file file"
-		  fi
-                  # Keeping track of which messages have fuzzy translations by
-                  # storing them in a dedicated file.
-		  fuzzy_po="fuzzy_$po_file"
-                  msgattrib --only-fuzzy -o $fuzzy_po $po_file
-                  # Generating a file purged from fuzzy translations
-		  purged_po="purged_$po_file"
-                  msgattrib --no-fuzzy -o $purged_po $po_file
-                  # Augmenting the purged file with all the translations from
-                  # the po_reference_file.
-		  with_reference_trans_po="with_ref_trans_$po_file"
-		  msgmerge --no-fuzzy-matching -o $with_reference_trans_po $purged_po $po_reference_file 2>/dev/null
-                  # Marking back all the translations that are fuzzy for this
-                  # particular language so that the translators know that they
-                  # should provide translations in their own language instead.
-                  msgattrib --only-file=$fuzzy_po --set-fuzzy --clear-obsolete -o $po_file $with_reference_trans_po
-		  $RM $fuzzy_po $purged_po $with_reference_trans_po
-		fi
+                   && [ $po_file != $po_reference_file ]; then
+                    if [[ -n $verbose ]]; then
+                        $ECHO "Replacing possible fuzzy strings in $po_file by the translated messages from the $po_reference_file file"
+                    fi
+                    # Keeping track of which messages have fuzzy translations by
+                    # storing them in a dedicated file.
+                    fuzzy_po="fuzzy_$po_file"
+                    msgattrib --only-fuzzy -o $fuzzy_po $po_file
+                    if [[ -r $fuzzy_po ]]; then
+                        # Generating a file purged from fuzzy translations
+                        purged_po="purged_$po_file"
+                        msgattrib --no-fuzzy -o $purged_po $po_file
+                        # Augmenting the purged file with all the translations
+                        # from the po_reference_file.
+                        with_reference_trans_po="with_ref_trans_$po_file"
+                        msgmerge --no-fuzzy-matching -o $with_reference_trans_po $purged_po $po_reference_file 2>/dev/null
+                        # Marking back all the translations that are fuzzy for
+                        # this particular language so that the translators know
+                        # that they should provide translations in their own
+                        # language instead.
+                        msgattrib --only-file=$fuzzy_po --set-fuzzy --clear-obsolete -o $po_file $with_reference_trans_po
+                        $RM -f $fuzzy_po $purged_po $with_reference_trans_po
+		    fi
+                fi
             done
 
             exit 0
