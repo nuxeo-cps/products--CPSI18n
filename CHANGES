@@ -3,15 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Made the update_pos replace fuzzy translations from po files with those of the
-  reference translations (which presently are en and fr). This will both provide
-  always correct translations for CPS sites, as well as ease the work of
-  translator contributors who will only have to update fuzzy translations with a
-  translation from their language.
+-
 Bug fixes:
 ~~~~~~~~~~
-- Made the update_pos script more user-friendly with updated help messages.
-- Warning the user if a final po file is corrupted.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
