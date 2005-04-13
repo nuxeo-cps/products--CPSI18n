@@ -1,24 +1,47 @@
 #!/bin/sh
-#
-# This script scans the skins directory and merge the differences.
-# It updates the pot/pos files inside the directories.
-# The custom.pot file is being merged too.
-#
-# This script relies on the GNU Internationalization utilities, so make sure you
-# have the gettext package (or equivalent) on your system.
-#
-# Usage:
-# update_pos [options]
-#
-#   -v, --verbose
-#     print messages and debug information during po file processing.
-#
+# Copyright (c) 2003-2005 Nuxeo SARL <http://nuxeo.com>
 # Authors:
 # Julien Anguenot <ja@nuxeo.com>
-# M.-A. DARCHE <madarche@nuxeo.com>
+# M.-A. Darche <madarche@nuxeo.com>
 # Encolpe Degoute <edegoute@nuxeo.com>
 #
 # $Id$
+
+prog_name=update_pos
+usage="Usage:
+$prog_name [options]
+
+  -h, --help
+     print help message and exit.  
+
+  -v, --verbose
+     print messages and debug information during po file processing.
+"
+
+help() {
+echo "
+$usage
+This script scans the skins directory for ZPT files to find strings to
+translate. It updates the pot/pos files inside the i18n directory of the product
+in which the script is run.
+
+This script relies on the following software, so make sur they are installed on
+your system and available for $prog_name:
+
+  * the GNU Internationalization utilities,
+    be sure to have the gettext package (or equivalent)
+
+  * the OpenPTi18n Zope product
+
+This script relies on the PRODUCTS_DIR variable to find the OpenPTi18n product.
+So for this script to work, you need to set this variable.
+
+Example:
+$ cd /var/lib/zope2.7/instance/instance1/Products/CPSDefault/i18n/
+$ export PRODUCTS_DIR=/var/lib/zope2.7/instance/instance1/Products/
+$ update_pos --verbose
+"
+}
 
 if [ ! $Z_NAME ]; then
     ECHO=echo
@@ -26,10 +49,22 @@ if [ ! $Z_NAME ]; then
     RM=rm
     GREP=grep
 else
-    . /usr/local/nuxeo/bin/inc.sh
+    # Include the Nuxeo specific script inc.sh if it exists
+    . inc.sh || exit -1
 fi
 
-verbose=$1
+# If the first argument is "-h" or "--help" display help.
+if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    help; exit 0
+fi
+
+# If the first argument is "-h" or "--help" display help.
+if [[ $1 == "-v" ]] || [[ $1 == "--verbose" ]]; then
+    verbose='True'
+else
+    verbose=''
+fi
+
 
 # Take the .config.pot from the make_pot
 # to get the name of the pot file choosen by

@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Made the update_pos script more user-friendly with updated help messages.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
