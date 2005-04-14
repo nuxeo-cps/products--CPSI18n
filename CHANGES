@@ -9,4 +9,4 @@ Bug fixes:
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- Factorized the way po files are checked for well-formedness.

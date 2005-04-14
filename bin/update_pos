@@ -66,11 +66,27 @@ else
     verbose=''
 fi
 
+# Check a po or pot file well-formedness
+checkPoFile() {
+    po_file=$1
+    # We are interested in the conversion here, we are just interested by the
+    # possible error messages and the return status of the command.
+    # 0 => the file is correct, otherwise there are errors.
+    msgconv $po_file >> /dev/null
+    if [ $? -ne 0 ] ; then
+        $ECHO "##############################################"
+        $ECHO "The file $po_file has problems!"
+        $ECHO "Correct the errors and re-run $prog_name"
+        $ECHO "##############################################"
+        $ECHO
+        exit 1
+    fi
+}
 
 # Take the .config.pot from the make_pot
 # to get the name of the pot file choosen by
 # the user.
-get_pot_name() {
+getPotName() {
     POT_FILE_NAME=`$GREP pot ./.config.pot`
 }
 
@@ -146,22 +162,12 @@ else
             # Generating the .pot file from the ZPTs.
             # Getting the file name to use from the product's configuration
             # file. This file name is $POT_FILE_NAME
-            get_pot_name
+            getPotName
             chmod a+w $POT_FILE_NAME
             $PYTHON_BIN $PARSER_SCRIPT -o $POT_FILE_NAME $SKINS_PATH
 
-            # Checking the ZPT's file well-formedness
-            msgconv $POT_FILE_NAME >> /dev/null
-            if [ $? -eq 1 ] ; then
-                $ECHO "##############################################"
-                $ECHO "Some ZPT files have some problems!"
-                $ECHO "Check file $POT_FILE_NAME"
-                $ECHO "Check also ZPT files in verbose/debug mode"
-                $ECHO "Correct the errors and rerun $prog_name"
-                $ECHO "##############################################"
-                $ECHO
-                exit 1
-            fi
+            # Checking the ZPT's po file well-formedness
+            checkPoFile $POT_FILE_NAME
 
             # Reading each line of the file with name
             # BLACKLIST_POT_FILE_NAME to find all the files which we want
@@ -190,17 +196,8 @@ else
             fi
 
             if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
-            # Checking the user custom.pot file well-formedness
-                msgconv custom.pot >> /dev/null
-                if [ $? -eq 1 ] ; then
-                    $ECHO "##############################################"
-                    $ECHO "Your custom.pot file is not well-formed!"
-                    $ECHO "Check file custom.pot"
-                    $ECHO "Correct the errors and rerun $prog_name"
-                    $ECHO "##############################################"
-                    $ECHO
-                    exit 1
-                fi
+                # Checking the user custom.pot file well-formedness
+                checkPoFile custom.pot
                 # Concatenate the custom pot file and the pot file coming from the ZPTs
                 msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
             fi
@@ -217,16 +214,7 @@ else
             ls *.po | while read po_file ; do
                 # Checking the final po file because someone might have corrupted
                 # it for example by inserting duplicate translations.
-                msgconv $po_file >> /dev/null
-                if [ $? -eq 1 ] ; then
-                    $ECHO "##############################################"
-                    $ECHO "The file $po_file has problems!"
-                    $ECHO "Correct the errors and rerun $prog_name"
-                    $ECHO "##############################################"
-                    $ECHO
-                    exit 1
-                fi
-
+                checkPoFile $po_file
                 if [[ -n $verbose ]]; then
                     $ECHO "Merging $po_file with $POT_FILE_NAME"
                     msgmerge $po_file $POT_FILE_NAME -o $po_file
