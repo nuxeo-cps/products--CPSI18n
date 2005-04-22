@@ -1,4 +1,22 @@
 *******************************************
+** CPSI18n V0.1.0 [R1 build 2005/04/22-13:58 by madarche]
+
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Fixed stupid typo error that was removing messages from the custom.pot file if
+  the product hadn't any .blacklist_pot file (typically CPSDefault).
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Factorized the way po files are checked for well-formedness in update_pos.
+- Removed the indentation mess in update_pos.
+
+*******************************************
 ** CPSI18n V0.0.4 [R1 build 2005/04/13-16:26 by madarche]
 
 Requires:
