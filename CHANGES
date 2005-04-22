@@ -6,7 +6,8 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Fixed stupid typo error that was removing messages from the custom.pot file if
+  the product hadn't any .blacklist_pot file (typically CPSDefault).
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - Factorized the way po files are checked for well-formedness in update_pos.

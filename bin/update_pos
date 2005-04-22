@@ -196,7 +196,7 @@ if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
   done < $BLACKLIST_POT_FILE_NAME
 fi
 
-if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
+if [[ -r custom.pot ]]; then
     # Checking the user custom.pot file well-formedness
     checkPoFile custom.pot
     # Concatenate the custom pot file and the pot file coming from the ZPTs
