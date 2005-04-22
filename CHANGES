@@ -3,7 +3,8 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- If the products doesn't have a skin directory, it looks for a browser 
+  directory, which is the standard for Five products.
 Bug fixes:
 ~~~~~~~~~~
 -
