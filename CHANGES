@@ -7,7 +7,7 @@ New features:
   directory, which is the standard for Five products.
 Bug fixes:
 ~~~~~~~~~~
--
+- Made update_pos un-fuzzyfy the header entry to have a safer .po output.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

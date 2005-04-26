@@ -253,6 +253,10 @@ ls *.po | while read po_file ; do
             # that they should provide translations in their own
             # language instead.
             msgattrib --only-file=$fuzzy_po --set-fuzzy --clear-obsolete -o $po_file $with_reference_trans_po
+            # Un-fuzzy-ing the header entry. There isn't any simpler way of
+            # doing this. This step is not mandatory, but it is better that way.
+            msgattrib --only-file=$purged_po --clear-fuzzy -o $po_file $po_file
+            # Removing the temporary files
             $RM -f $fuzzy_po $purged_po $with_reference_trans_po
         fi
     fi
