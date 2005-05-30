@@ -3,12 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- If the products doesn't have a skin directory, it looks for a browser 
-  directory, which is the standard for Five products.
+-
 Bug fixes:
 ~~~~~~~~~~
-- Made update_pos un-fuzzyfy the header entry to have a safer .po output.
-- Cleaned up make_pot and added it an help option.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

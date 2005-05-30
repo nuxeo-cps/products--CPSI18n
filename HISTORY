@@ -1,4 +1,22 @@
 *******************************************
+** CPSI18n V0.1.1 [R1 build 2005/05/30-12:38 by madarche]
+** SVN URL: https://svn.nuxeo.org/pub/CPSI18n/trunk Revision: 21917
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- If the products doesn't have a skin directory, it looks for a browser 
+  directory, which is the standard for Five products.
+Bug fixes:
+~~~~~~~~~~
+- Made update_pos un-fuzzyfy the header entry to have a safer .po output.
+- Cleaned up make_pot and added it an help option.
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSI18n V0.1.0 [R1 build 2005/04/22-13:58 by madarche]
 
 Requires:
