@@ -59,7 +59,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
     help; exit 0
 fi
 
-# If the first argument is "-h" or "--help" display help.
+# If the first argument is "-v" or "--verbose" display help.
 if [[ $1 == "-v" ]] || [[ $1 == "--verbose" ]]; then
     verbose='True'
 else
