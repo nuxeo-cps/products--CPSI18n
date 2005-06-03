@@ -1,0 +1,343 @@
+#!/usr/bin/python
+
+# (C) Copyright 2005 Nuxeo SARL <http://nuxeo.com>
+# (C) Copyright 2005 Unilog <http://unilog.com>
+# Authors:
+# M.-A. Darche <madarche@nuxeo.com>
+# G. de la Rochemace <gdelaroch@unilog.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# $Id: BaseBox.py 7293 2005-04-03 23:09:11Z janguenot $
+"""Concatenation of the whole 'po' and 'pot' files
+in the objective of generate a graphic of
+the correct translation per language.
+
+The dependencies are:
+package1
+package2
+"""
+
+detail = 0
+total = 0
+
+import os, os.path, sys, string, re
+from optparse import OptionParser
+
+try:
+    import gdchart
+except ImportError:
+    gdchart = None
+
+
+products = ['CPSBlog',
+            'CPSCalendar',
+            'CPSChat',
+            'CPSCollector',
+            'CPSDefault',
+            'CPSDirectory',
+            'CPSDocument',
+            'CPSForum',
+            'CPSIO',
+            'CPSNavigation',
+            'CPSPortlets',
+            'CPSRSS',
+            'CPSSchemas',
+            'CPSSubscriptions',
+            'CPSTypeMaker',
+            'CPSWiki',
+            ]
+
+
+
+def exec_args():
+    """Analyze command line arguments.
+    """
+    usage = "usage: %prog [options]"
+    parser = OptionParser(usage=usage)
+
+    parser.add_option('-v', '--verbose',
+                      action='store_true',
+                      dest='verbose',
+                      default=False,
+                      help="Display more details")
+
+    parser.add_option('--vv', '--vverbose',
+                      action='store_true',
+                      dest='veryverbose',
+                      default=False,
+                      help="Display all the details on fr.po and en.po")
+
+    (options, args) = parser.parse_args()
+
+    if options.verbose:
+        global detail
+        detail = 1
+
+    if options.veryverbose:
+        global detail
+        detail = 2
+
+
+def getListPoName():
+    """Return a list of all language name included in the
+    whole CPS products example : ['fr', 'en', ...]
+    """
+
+    list_po_name = []
+    for product in products:
+        po_path = '../../%s/i18n/' % product
+        if os.path.exists(po_path):
+            for f in os.listdir(po_path):
+                if f.endswith('.po'):
+                    file_name = os.path.splitext(f)[0]
+                    if file_name not in list_po_name:
+                        list_po_name.append(file_name)
+
+    return list_po_name
+
+
+
+def displayGlobalMissingTranslation():
+    """Create all the 'po' file from a concatenation of
+    the CPS 'po' files
+    """
+    languages = getListPoName()
+
+    for language in languages:
+
+        if language == 'fr':
+            for product in products:
+                file_path = '../../%s/i18n/%s.po' % (product, language)
+                if os.path.isfile(file_path):
+                    print '***********%s*************' % file_path
+                    displayMissingTranslation(file_path)
+
+    print "global 'po' files generated."
+
+
+
+# DOTALL: Make the "." special character match any character at all, including a
+# newline; without this flag, "." will match anything except a newline.
+#
+# #, fuzzy
+# msgid "CatalogNavigation"
+# msgstr "Navigation"
+#
+FUZZY_REGEXP = re.compile(r'((#, fuzzy\nmsgid "[^\n]+?"\n|#, fuzzy\nmsgid ""' \
+                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
+
+# DOTALL: Make the "." special character match any character at all, including a
+# newline; without this flag, "." will match anything except a newline.
+#
+# msgid "batch_next_x_items"
+# msgstr ""
+#
+# msgid ""
+# "Posted by ${item_creator} @ ${item_modification} <block condition=\"info\"> "
+# "<span>Label Status</span> <span content=\"info/review_state\" attributes="
+# "\"class info/review_state\">Work</span> </block>"
+# msgstr ""
+#
+MISSING_TRANSLATION_REGEXP = re.compile(r'((msgid "[^\n]+?"\n|msgid ""' \
+                                '\n("[^\n]+"\n)+?)msgstr ""\n\n)', re.DOTALL)
+
+
+def displayMissingTranslation(file_po):
+
+    file = open(file_po, 'r')
+    file_content = file.read()
+    file.close()
+
+    list_missing_msgids = []
+
+    match_missing = MISSING_TRANSLATION_REGEXP.findall(file_content)
+    for m in match_missing:
+        msgid = m[0].split("\nmsgstr")[0]
+        list_missing_msgids.append(msgid)
+
+    match_fuzzy = FUZZY_REGEXP.findall(file_content)
+    for m in match_fuzzy:
+        msgid = m[0].split("\nmsgstr")[0]
+        msgid = msgid.split("fuzzy\n")[1]
+        if msgid not in list_missing_msgids:
+            list_missing_msgids.append(msgid)
+
+    for missing_msgid in list_missing_msgids:
+        print missing_msgid
+
+
+
+
+#def createGlobalPotFile():
+#    """Create 'custom.pot' and 'cpsallproducts.pot'
+#    from a concatenation of the CPS 'pot' files from every products
+#    """
+#    cmd_custom_pot = "msgcat --use-first --to-code ISO-8859-15 " \
+#                     "-o custom.pot"
+#    cmd_cps_pot = "msgcat --use-first --to-code ISO-8859-15 -o " \
+#                  "cpsallproducts.pot"
+#
+#    for product in products:
+#        file_path_pot = '../../%s/i18n/' % product
+#        file_path_custom = file_path_pot + 'custom.pot'
+#        cps_pot_name = [f for f in os.listdir(file_path_pot)
+#                                         if f.startswith('cps') &
+#                                         f.endswith('.pot')]
+#
+#        file_path_cps = file_path_pot + cps_pot_name[0]
+#
+#        if os.path.isfile(file_path_custom):
+#            cmd_custom_pot = c#    cmd = "i18ndude chart -o i18n_po.png --pot cpsallpr" \
+#          "oducts.pot *.po"
+
+#    status = commands.getstatusoutput(cmd)
+#    if detail:
+#        print "\nGraphic generated : \n"
+#        print status[1]
+#        print "\n/////// fr.po ////////\n"
+#        displayEnAndFrMissingTranslation('fr.po')md_custom_pot + ' ' + file_path_custom
+#
+#        if os.path.isfile(file_path_cps):
+#            cmd_cps_pot = cmd_cps_pot + ' ' + file_path_cps
+#
+#
+#    try:
+#        status = commands.getstatusoutput(cmd_custom_pot)
+#        status = commands.getstatusoutput(cmd_cps_pot)
+#        if detail > 0:
+#            print "global 'pot' files generated."
+#    except IOError:
+#        log("Cannot concate 'po' or 'pot' files", True)
+#        sys.exit(1)
+
+
+
+TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
+                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
+
+
+def makeChart():
+    """Generate the graphic from the 'po' and 'pot' files.
+    """
+    if not gdchart:
+        raise ImportError, 'No module named gdchart'
+
+    total = 0
+    names = ['Total']
+    values = []
+    colors = [0x00ff00] # green
+    size=(800, 500)
+
+    languages = getListPoName()
+    print "number of languages: %s\n" % (len(languages))
+
+
+    for language in languages:
+        list_fuzzy_msgids = []
+        list_missing_msgids = []
+        list_msgids = []
+        value = 0
+        for product in products:
+            file_path = '../../%s/i18n/%s.po' % (product, language)
+            if os.path.isfile(file_path):
+                file = open(file_path, 'r')
+                file_content = file.read()
+                file.close()
+
+                match_translation = TRANSLATION_REGEXP.findall(file_content)
+                for m in match_translation:
+                    msgid = m[0].split("\nmsgstr")[0]
+                    if msgid not in list_msgids:
+                        list_msgids.append(msgid)
+
+                match_fuzzy = FUZZY_REGEXP.findall(file_content)
+                for m in match_fuzzy:
+                    msgid = m[0].split("\nmsgstr")[0]
+                    msgid = msgid.split("fuzzy\n")[1]
+                    if msgid not in list_fuzzy_msgids:
+                        list_fuzzy_msgids.append(msgid)
+                        if (detail == 2):
+                            if language == 'fr':
+                                for fuzzy_msgid in list_fuzzy_msgids:
+                                    print fuzzy_msgid
+
+                match_missing = MISSING_TRANSLATION_REGEXP.findall(file_content)
+                for m in match_missing:
+                    msgid = m[0].split("\nmsgstr")[0]
+                    if msgid not in list_missing_msgids:
+                        list_missing_msgids.append(msgid)
+                        if (detail == 2):
+                            if language == 'fr':
+                                for missing_msgid in list_missing_msgids:
+                                    print missing_msgid
+
+        nb_msgid = len(list_msgids)
+        if total < nb_msgid:
+            total = nb_msgid
+            values.append(total)
+        nb_fuzzy = len(list_fuzzy_msgids)
+        nb_missing = len(list_missing_msgids)
+        value = nb_msgid - nb_fuzzy - nb_missing
+        names.append(language)
+        values.append(value)
+        complete = int(value / (total*1.0) * 100)
+        colors.append(colors[0] * (101 - complete) * 2)
+
+        print "%s: %s msgids, %s fuzzy, %s missing -> translated %s (%d%% done)" % (
+            language, nb_msgid, nb_fuzzy, nb_missing, value, complete)
+
+
+
+    # sort by number of translated messages
+    # keeping 'en' always on first position
+    z = zip(values[1:], names[1:], colors[1:])
+    z.sort(lambda x, y: x[0] == y[0] and cmp((x[0], x[1]), (y[0], y[1])) or
+                                         cmp((y[0], y[1]), (x[0], x[1])))
+    values = values[0:1]
+    names = names[0:1]
+    colors = colors[0:1]
+    for v,n,c in z:
+        values.append(v)
+        names.append(n)
+        colors.append(c)
+
+    options = {'bg_color': 0xffffff,
+               'border': gdchart.GDC_BORDER_ALL,
+               'xaxis_font': gdchart.GDC_SMALL,
+               'title': 'Graphic',
+               'ext_color' : colors,
+               }
+
+    gdchart.option(**options)
+
+    gdchart.chart(gdchart.GDC_3DBAR,
+                  size,
+                  'i18n_coverage.png',
+                  names,
+                  values)
+
+
+
+def log(message, force=False):
+    """Log the given message to stderr.
+    """
+    if force or verbose:
+        print >> sys.stderr, message
+
+
+
+exec_args()
+makeChart()

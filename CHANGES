@@ -3,7 +3,7 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Added i18n_coverage script (with graphic generation)
 Bug fixes:
 ~~~~~~~~~~
 -
