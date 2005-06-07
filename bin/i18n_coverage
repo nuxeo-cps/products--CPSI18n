@@ -178,7 +178,7 @@ TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
 
 
 
-def makeChart(export_file=DEFAULT_GRAPHIC_FILE_PATH):
+def makeChart(export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     """Generate the graphic thanks to the 'po' and 'pot' files from all Products.
     """
     if not gdchart:
@@ -307,22 +307,22 @@ def makeChart(export_file=DEFAULT_GRAPHIC_FILE_PATH):
     options = {'bg_color': 0xffffff,
                'border': gdchart.GDC_BORDER_ALL,
                'xaxis_font': gdchart.GDC_SMALL,
-               'title': 'Graphic',
-               'ext_color' : colors,
-               'format' : gdchart.GDC_PNG,
+               'title': 'Translation coverage of all CPSproducts',
+               'ext_color': colors,
+               'format': gdchart.GDC_PNG,
                }
 
     gdchart.option(**options)
 
     gdchart.chart(gdchart.GDC_3DBAR,
                   size,
-                  export_file,
+                  export_file_path,
                   names,
                   values,
                   )
 
     if (detail != 0):
-        log("\nGraphic created: %s\n" % (export_file))
+        log("\nGraphic created: %s\n" % (export_file_path))
 
 
 def log(message):
