@@ -106,13 +106,21 @@ def execArgs():
     else:
         makeChart(path)
 
-
+# #.   <span>Go to the
+# #.     menu</span>
+# #: from ../skins/cps_default/accessibility.pt
+# msgid "accessibility_shortcut_menu"
+# msgstr "Go to the menu"
+#
+TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
+                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
 
 def getListPoName(path):
     """Return a list of all language name included in the
     whole CPS products example : ['fr', 'en', ...]
     """
     list_po_name = []
+    list_total_msgids = []
     for product in products:
         po_path = os.path.join(path, '%s/i18n/' % product)
         if os.path.exists(po_path):
@@ -121,6 +129,17 @@ def getListPoName(path):
                     file_name = os.path.splitext(f)[0]
                     if file_name not in list_po_name:
                         list_po_name.append(file_name)
+
+                if f.endswith('.pot') and not f.startswith('.'):
+                    file = open(os.path.join(po_path, f), 'r')
+                    file_content = file.read()
+                    file.close()
+                    match_translation = TRANSLATION_REGEXP.findall(file_content)
+                    for m in match_translation:
+                        msgid = m[0].split("\nmsgstr")[0]
+                        if msgid not in list_total_msgids:
+                            list_total_msgids.append(msgid)
+
         else:
             continue
 
@@ -128,7 +147,7 @@ def getListPoName(path):
         log("Directory not found: %s" % po_path)
         sys.exit(1)
     else:
-        return list_po_name
+        return [list_po_name, len(list_total_msgids)]
 
 
 
@@ -179,15 +198,6 @@ FUZZY_REGEXP = re.compile(r'((#, fuzzy\nmsgid "[^\n]+?"\n|#, fuzzy\nmsgid ""' \
 EMPTY_REGEXP = re.compile(r'((msgid "[^\n]+?"\n|msgid ""' \
                                 '\n("[^\n]+"\n)+?)msgstr ""\n\n)', re.DOTALL)
 
-# #.   <span>Go to the
-# #.     menu</span>
-# #: from ../skins/cps_default/accessibility.pt
-# msgid "accessibility_shortcut_menu"
-# msgstr "Go to the menu"
-#
-TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
-                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
-
 
 
 def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
@@ -197,17 +207,18 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         raise ImportError, 'No module named gdchart'
 
     global detail
-    total = 0
+    total = getListPoName(path)[1]
     names = ['Total']
-    values = []
+    values = [total]
     colors = [0x00ff00] # green
     size = (800, 500)
 
-    languages = getListPoName(path)
+    languages = getListPoName(path)[0]
     nb_languages = len(languages)
 
     if (detail != 0):
         log("\nNumber of found languages: %s" % (nb_languages))
+        log("Number total of msgid: %s" % (total))
 
     list_results = []
 
@@ -266,10 +277,6 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
 
 
         nb_msgid = len(list_msgids)
-        if total < nb_msgid:
-            total = nb_msgid
-            values.append(total)
-
         nb_fuzzy = len(list_fuzzy_msgids)
         nb_empty = len(list_empty_msgids)
         value = nb_msgid - nb_fuzzy - nb_empty
