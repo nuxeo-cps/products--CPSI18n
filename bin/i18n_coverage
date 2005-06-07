@@ -107,6 +107,7 @@ def execArgs():
         makeChart(path)
 
 
+
 def getListPoName(path):
     """Return a list of all language name included in the
     whole CPS products example : ['fr', 'en', ...]
@@ -121,10 +122,13 @@ def getListPoName(path):
                     if file_name not in list_po_name:
                         list_po_name.append(file_name)
         else:
-            log("Directory not found: %s" % po_path)
-            sys.exit(1)
+            continue
 
-    return list_po_name
+    if len(list_po_name) == 0:
+        log("Directory not found: %s" % po_path)
+        sys.exit(1)
+    else:
+        return list_po_name
 
 
 
@@ -256,6 +260,9 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
                         if (detail == 2):
                             if language == 'fr' or language == 'en':
                                 log('%-15s -  empty | %s' % (product, msgid))
+
+            else:
+                continue
 
 
         nb_msgid = len(list_msgids)
