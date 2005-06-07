@@ -65,7 +65,7 @@ def execArgs():
     """Analyze command line arguments.
     """
     global detail
-    usage = "usage: %prog [options]"
+    usage = "usage: %prog [options] [Products directory]"
     parser = OptionParser(usage=usage)
 
     parser.add_option('-v', '--verbose',
@@ -90,6 +90,11 @@ def execArgs():
 
     (options, args) = parser.parse_args()
 
+    path = '.'
+
+    if len(args) != 0:
+        path = args[0]
+
     if options.verbose:
         detail = 1
 
@@ -97,24 +102,27 @@ def execArgs():
         detail = 2
 
     if options.outfile:
-        makeChart(options.outfile)
+        makeChart(path, options.outfile)
     else:
-        makeChart()
+        makeChart(path)
 
 
-def getListPoName():
+def getListPoName(path):
     """Return a list of all language name included in the
     whole CPS products example : ['fr', 'en', ...]
     """
     list_po_name = []
     for product in products:
-        po_path = '../../%s/i18n/' % product
+        po_path = os.path.join(path, '%s/i18n/' % product)
         if os.path.exists(po_path):
             for f in os.listdir(po_path):
                 if f.endswith('.po'):
                     file_name = os.path.splitext(f)[0]
                     if file_name not in list_po_name:
                         list_po_name.append(file_name)
+        else:
+            log("Directory not found: %s" % po_path)
+            sys.exit(1)
 
     return list_po_name
 
@@ -178,7 +186,7 @@ TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
 
 
 
-def makeChart(export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
+def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     """Generate the graphic thanks to the 'po' and 'pot' files from all Products.
     """
     if not gdchart:
@@ -191,8 +199,9 @@ def makeChart(export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     colors = [0x00ff00] # green
     size = (800, 500)
 
-    languages = getListPoName()
+    languages = getListPoName(path)
     nb_languages = len(languages)
+
     if (detail != 0):
         log("\nNumber of found languages: %s" % (nb_languages))
 
@@ -214,7 +223,7 @@ def makeChart(export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         value = 0
 
         for product in products:
-            file_path = '../../%s/i18n/%s.po' % (product, language)
+            file_path = os.path.join(path, '%s/i18n/%s.po' % (product, language))
             if os.path.isfile(file_path):
                 file = open(file_path, 'r')
                 file_content = file.read()
@@ -306,7 +315,6 @@ def makeChart(export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
 
     options = {'bg_color': 0xffffff,
                'border': gdchart.GDC_BORDER_ALL,
-               'xaxis_font': gdchart.GDC_SMALL,
                'title': 'Translation coverage of all CPSproducts',
                'ext_color': colors,
                'format': gdchart.GDC_PNG,
