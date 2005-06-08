@@ -41,23 +41,25 @@ except ImportError:
     gdchart = None
 
 DEFAULT_GRAPHIC_FILE_PATH = './i18n_coverage.png'
-# color coefficient for 3D Bar determined by the percentage
+
+# Color coefficient for 3D Bar determined by the percentage
 COLOR_STEP = 2
 
-LANGUAGES_FOR_MORE_DETAILS = ['fr','en']
+LANGUAGES_FOR_MORE_DETAILS = ['fr', 'en']
 
-products_lists = []
+products = []
 
 
 def execArgs():
     """Analyze command line arguments.
     """
-    global detail, products_lists
+    global detail, products
     usage = """usage: %prog [options] [Products]
-            Examples:
-            ./i18n_coverage --vv CPS* -eCPSSkins
-            ./i18n_coverage -v -d ~/zope/zope276_instance_1/Products CPSDefault CPSDirectory CPSBlog
-            """
+
+Examples:
+./i18n_coverage -v CPS* -eCPSSkins
+./i18n_coverage --vverbose --dir ~/zope/zope276_instance_1/Products CPSDefault CPSDirectory CPSBlog
+"""
     parser = OptionParser(usage=usage)
 
     parser.add_option('-v', '--verbose',
@@ -66,7 +68,7 @@ def execArgs():
                       default=False,
                       help="Display more details")
 
-    parser.add_option('--vv', '--vverbose',
+    parser.add_option('--vverbose',
                       action='store_true',
                       dest='veryverbose',
                       default=False,
@@ -99,11 +101,10 @@ def execArgs():
     path = options.directory
 
     if len(args) != 0:
-        products_lists = args
+        products = args
         if options.excluded_products:
             excluded_products_names = options.excluded_products.split(',')
-            products_lists = [x for x in products_lists if x not in
-                              excluded_products_names]
+            products = [x for x in products if x not in excluded_products_names]
 
         if options.verbose:
             detail = 1
@@ -116,7 +117,7 @@ def execArgs():
         else:
             makeChart(path)
     else:
-        log("Products names must be passed in argument")
+        log("Products names must be passed as arguments")
 
 
 # #.   <span>Go to the
@@ -135,7 +136,7 @@ def getLanguagesInformations(path):
     list_po_name = []
     list_total_msgids = []
     po_path = path
-    for product in products_lists:
+    for product in products:
         po_path = os.path.join(path, '%s/i18n/' % product)
         if os.path.exists(po_path):
             for f in os.listdir(po_path):
@@ -247,7 +248,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
 
         value = 0
 
-        for product in products_lists:
+        for product in products:
             file_path = os.path.join(path, '%s/i18n/%s.po'
                                      % (product, language))
             if os.path.isfile(file_path):
@@ -337,7 +338,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
 
         options = {'bg_color': 0xffffff,
                    'border': gdchart.GDC_BORDER_ALL,
-                   'title': 'Translation coverage of all CPSproducts',
+                   'title': 'Translation coverage of all CPS products',
                    'ext_color': colors,
                    'format': gdchart.GDC_PNG,
                    }
