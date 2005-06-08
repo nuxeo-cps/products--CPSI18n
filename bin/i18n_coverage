@@ -37,35 +37,27 @@ from optparse import OptionParser
 try:
     import gdchart
 except ImportError:
+    # Program will work, but without graphic generation
     gdchart = None
 
 DEFAULT_GRAPHIC_FILE_PATH = './i18n_coverage.png'
+# color coefficient for 3D Bar determined by the percentage
+COLOR_STEP = 2
 
-products = [
-    'CPSBlog',
-    'CPSCalendar',
-    'CPSChat',
-    'CPSCollector',
-    'CPSDefault',
-    'CPSDirectory',
-    'CPSDocument',
-    'CPSForum',
-    'CPSIO',
-    'CPSNavigation',
-    'CPSPortlets',
-    'CPSRSS',
-    'CPSSchemas',
-    'CPSSubscriptions',
-    'CPSTypeMaker',
-    'CPSWiki',
-    ]
+LANGUAGES_FOR_MORE_DETAILS = ['fr','en']
+
+products_lists = []
 
 
 def execArgs():
     """Analyze command line arguments.
     """
-    global detail
-    usage = "usage: %prog [options] [Products directory]"
+    global detail, products_lists
+    usage = """usage: %prog [options] [Products]
+            Examples:
+            ./i18n_coverage --vv CPS* -eCPSSkins
+            ./i18n_coverage -v -d ~/zope/zope276_instance_1/Products CPSDefault CPSDirectory CPSBlog
+            """
     parser = OptionParser(usage=usage)
 
     parser.add_option('-v', '--verbose',
@@ -80,6 +72,20 @@ def execArgs():
                       default=False,
                       help="Display all the details on fr.po and en.po")
 
+    parser.add_option('-d', '--dir',
+                      action="store",
+                      type="string",
+                      dest="directory",
+                      default=".",
+                      help="Products directory")
+
+    parser.add_option('-e', '--exclude',
+                      action="store",
+                      type="string",
+                      dest="excluded_products",
+                      default=None,
+                      help="Products name excluded")
+
     parser.add_option('-o', '--outfile',
                       action="store",
                       type="string",
@@ -90,21 +96,28 @@ def execArgs():
 
     (options, args) = parser.parse_args()
 
-    path = '.'
+    path = options.directory
 
     if len(args) != 0:
-        path = args[0]
+        products_lists = args
+        if options.excluded_products:
+            excluded_products_names = options.excluded_products.split(',')
+            products_lists = [x for x in products_lists if x not in
+                              excluded_products_names]
 
-    if options.verbose:
-        detail = 1
+        if options.verbose:
+            detail = 1
 
-    if options.veryverbose:
-        detail = 2
+        if options.veryverbose:
+            detail = 2
 
-    if options.outfile:
-        makeChart(path, options.outfile)
+        if options.outfile:
+            makeChart(path, options.outfile)
+        else:
+            makeChart(path)
     else:
-        makeChart(path)
+        log("Products names must be passed in argument")
+
 
 # #.   <span>Go to the
 # #.     menu</span>
@@ -115,13 +128,14 @@ def execArgs():
 TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
                                 '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
 
-def getListPoName(path):
-    """Return a list of all language name included in the
-    whole CPS products example : ['fr', 'en', ...]
+def getLanguagesInformations(path):
+    """Return a list of all language names included in the
+    whole CPS products, example : ['fr', 'en', ...]
     """
     list_po_name = []
     list_total_msgids = []
-    for product in products:
+    po_path = path
+    for product in products_lists:
         po_path = os.path.join(path, '%s/i18n/' % product)
         if os.path.exists(po_path):
             for f in os.listdir(po_path):
@@ -203,26 +217,22 @@ EMPTY_REGEXP = re.compile(r'((msgid "[^\n]+?"\n|msgid ""' \
 def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     """Generate the graphic thanks to the 'po' and 'pot' files from all Products.
     """
-    if not gdchart:
-        raise ImportError, 'No module named gdchart'
-
     global detail
-    total = getListPoName(path)[1]
+    available_languages, msgids_total = getLanguagesInformations(path)
     names = ['Total']
-    values = [total]
+    values = [msgids_total]
     colors = [0x00ff00] # green
     size = (800, 500)
 
-    languages = getListPoName(path)[0]
-    nb_languages = len(languages)
+    nb_languages = len(available_languages)
 
     if (detail != 0):
-        log("\nNumber of found languages: %s" % (nb_languages))
-        log("Number total of msgid: %s" % (total))
+        log("\nNumber of languages found: %s" % (nb_languages))
+        log("Number of msgids found: %s" % (msgids_total))
 
     list_results = []
 
-    for language in languages:
+    for language in available_languages:
 
         list_fuzzy_msgids = []
         list_empty_msgids = []
@@ -232,13 +242,14 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         # English and French are the two most important language for CPS and
         # also because the other languages have to many fuzzy and empty msgids.
         if (detail == 2):
-            if language == 'fr' or language == 'en':
+            if language in LANGUAGES_FOR_MORE_DETAILS:
                 log('\n\n//////////////// %s ////////////////\n' % language)
 
         value = 0
 
-        for product in products:
-            file_path = os.path.join(path, '%s/i18n/%s.po' % (product, language))
+        for product in products_lists:
+            file_path = os.path.join(path, '%s/i18n/%s.po'
+                                     % (product, language))
             if os.path.isfile(file_path):
                 file = open(file_path, 'r')
                 file_content = file.read()
@@ -259,7 +270,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
                     if msgid not in list_fuzzy_msgids:
                         list_fuzzy_msgids.append(msgid)
                         if (detail == 2):
-                            if language == 'fr' or language == 'en':
+                            if language in LANGUAGES_FOR_MORE_DETAILS:
                                 log('%-15s -  fuzzy | %s' % (product, msgid))
 
 
@@ -269,7 +280,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
                     if msgid not in list_empty_msgids:
                         list_empty_msgids.append(msgid)
                         if (detail == 2):
-                            if language == 'fr' or language == 'en':
+                            if language in LANGUAGES_FOR_MORE_DETAILS:
                                 log('%-15s -  empty | %s' % (product, msgid))
 
             else:
@@ -281,31 +292,26 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         nb_empty = len(list_empty_msgids)
         value = nb_msgid - nb_fuzzy - nb_empty
 
+        complete = int(value / float(msgids_total) * 100)
+
+        result_line = "%-5s:  %-4s msgids,   %-4s fuzzy,   %-4s empty " \
+                       " ->  %-5s translated (%-3d%% done)" % (language,
+                       nb_msgid, nb_fuzzy, nb_empty, value, complete)
+
+
+        if nb_msgid > msgids_total:
+            result_line = "%s [PROBLEM: %s > %s]" % (result_line, nb_msgid,
+                                                     msgids_total)
+        if complete > 100:
+            complete = 100
+
+        if value > msgids_total:
+            value = msgids_total
+
+        list_results.append(result_line)
         names.append(language)
         values.append(value)
-        complete = int(value / (total*1.0) * 100)
-
-        # To compute the color_step_coef we can't use a mathematic function,
-        # the coefficient moves according to the number of languages.
-        # The ratio is neither linear nor exponential.
-        # So we need to use the following conditions.
-        color_step_coef = 2
-        if nb_languages < 4:
-            color_step_coef = 7
-        elif nb_languages > 3 and nb_languages < 7:
-            color_step_coef = 7
-        elif nb_languages == 7:
-            color_step_coef = 6
-        elif nb_languages == 8:
-            color_step_coef = 5
-        elif nb_languages > 8 and nb_languages < 10:
-            color_step_coef = 4
-
-        colors.append(colors[0] * (101 - complete) * color_step_coef)
-
-        list_results.append("%-5s:  %-4s msgids,   %-4s fuzzy,   %-4s empty " \
-                            " ->  %-5s translated (%-3d%% done)" % (language,
-                            nb_msgid, nb_fuzzy, nb_empty, value, complete))
+        colors.append(colors[0] * (101 - complete) * COLOR_STEP)
 
     if (detail != 0):
         print
@@ -327,24 +333,29 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         names.append(n)
         colors.append(c)
 
-    options = {'bg_color': 0xffffff,
-               'border': gdchart.GDC_BORDER_ALL,
-               'title': 'Translation coverage of all CPSproducts',
-               'ext_color': colors,
-               'format': gdchart.GDC_PNG,
-               }
+    if gdchart is not None:
 
-    gdchart.option(**options)
+        options = {'bg_color': 0xffffff,
+                   'border': gdchart.GDC_BORDER_ALL,
+                   'title': 'Translation coverage of all CPSproducts',
+                   'ext_color': colors,
+                   'format': gdchart.GDC_PNG,
+                   }
 
-    gdchart.chart(gdchart.GDC_3DBAR,
-                  size,
-                  export_file_path,
-                  names,
-                  values,
-                  )
+        gdchart.option(**options)
 
-    if (detail != 0):
-        log("\nGraphic created: %s\n" % (export_file_path))
+        gdchart.chart(gdchart.GDC_3DBAR,
+                      size,
+                      export_file_path,
+                      names,
+                      values,
+                      )
+
+        if (detail != 0):
+            log("\nGraphic created: %s\n" % (export_file_path))
+
+    else:
+        log("\nGraphic not created: gdchart not install")
 
 
 def log(message):
