@@ -44,7 +44,7 @@ $ make_pot --verbose
 
 if [ ! $Z_NAME ]; then
     ECHO=echo
-    PWD=`pwd`
+    PWD=pwd
     RM=rm
     CAT=cat
     GREP=grep
@@ -170,7 +170,7 @@ if [ ! -d $PRODUCTS_DIR/OpenPTi18n ]; then
 else
     PARSER_SCRIPT=$PRODUCTS_DIR/OpenPTi18n/i18n_xgettext.py
     # Checking if we are in the i18n directory
-    $ECHO $PWD | grep "i18n" >> /dev/null
+    $ECHO `$PWD` | grep "i18n" >> /dev/null
     if [ $? -eq 1 ] ; then
         $ECHO "make_pot needs to be executed within the i18n directory"
         $ECHO "You can also use make_pot in debug mode as stated below: "
@@ -179,7 +179,7 @@ else
         $ECHO "if some of the ZPT's are not correct"
         exit 1
     else
-        $ECHO $PWD | grep "i18n/" >> /dev/null
+        $ECHO `$PWD` | grep "i18n/" >> /dev/null
         if [ $? -eq 0 ] ; then
             $ECHO "make_pot needs to be executed within the i18n directory"
             $ECHO "You can also use make_pot in debug mode as stated below: "
@@ -209,10 +209,10 @@ else
                     if [ $POT_FILE_NAME ]; then
                        # Renaming
 
-                        $MV $PWD/default.pot $PWD/$POT_FILE_NAME.pot
-                        touch $PWD/.config.pot
-                        touch $PWD/.blacklist_pot
-                        $ECHO $PWD/$POT_FILE_NAME.pot > $PWD/.config.pot
+                        $MV `$PWD`/default.pot `$PWD`/$POT_FILE_NAME.pot
+                        touch `$PWD`/.config.pot
+                        touch `$PWD`/.blacklist_pot
+                        $ECHO `$PWD`/$POT_FILE_NAME.pot > `$PWD`/.config.pot
 
                         # Creating the en.po and fr.po for dev
                         $ECHO
@@ -220,8 +220,8 @@ else
                         $ECHO "### make_pot: Generating en/fr po files"
                         $ECHO "#######################################"
                         $ECHO
-                        $CP $PWD/$POT_FILE_NAME.pot $PWD/en.po
-                        $CP $PWD/$POT_FILE_NAME.pot $PWD/fr.po
+                        $CP `$PWD`/$POT_FILE_NAME.pot `$PWD`/en.po
+                        $CP `$PWD`/$POT_FILE_NAME.pot `$PWD`/fr.po
 
                         # Generating the custom.pot file
                         touch xx.fake

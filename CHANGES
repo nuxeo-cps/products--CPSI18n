@@ -6,7 +6,8 @@ New features:
 - Added i18n_coverage script (with graphic generation)
 Bug fixes:
 ~~~~~~~~~~
--
+- changed the definition of $PWD in make_pot to be consistent with inc.sh and
+  use `$PWD` instead of $PWD
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
