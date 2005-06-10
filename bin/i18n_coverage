@@ -28,10 +28,8 @@ python-gdchart (Python interface to GDChart)
 libgdchart-gd1-noxpm (Generate graphs using the GD library)
 """
 
-global detail
-detail = 0
-
 import os, os.path, sys, string, re
+from time import strftime, gmtime
 from optparse import OptionParser
 
 try:
@@ -47,7 +45,13 @@ COLOR_STEP = 2
 
 LANGUAGES_FOR_MORE_DETAILS = ['fr', 'en']
 
+TIME_FORMAT = '%Y-%m-%d %H:%M %Z'
+time_generated = strftime(TIME_FORMAT, gmtime())
+
 products = []
+
+global detail
+detail = 0
 
 
 def execArgs():
@@ -57,8 +61,10 @@ def execArgs():
     usage = """usage: %prog [options] [Products]
 
 Examples:
-./i18n_coverage -v CPS* -eCPSSkins
-./i18n_coverage --vverbose --dir ~/zope/zope276_instance_1/Products CPSDefault CPSDirectory CPSBlog
+$ ./i18n_coverage --vverbose --dir /var/lib/zope2.7/instance_1/Products CPSDefault CPSDirectory CPSBlog -eCPSSkins
+
+$ cd /var/lib/zope2.7/instance_1/Products
+$ ./i18n_coverage -v CPS* -eCPSSkins
 """
     parser = OptionParser(usage=usage)
 
@@ -335,10 +341,11 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
         colors.append(c)
 
     if gdchart is not None:
-
+        chart_title = ("Translation coverage of all CPS products (%s)"
+                       % time_generated)
         options = {'bg_color': 0xffffff,
                    'border': gdchart.GDC_BORDER_ALL,
-                   'title': 'Translation coverage of all CPS products',
+                   'title': chart_title,
                    'ext_color': colors,
                    'format': gdchart.GDC_PNG,
                    }
