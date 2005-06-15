@@ -92,6 +92,7 @@ class TranslationsTestCase(unittest.TestCase):
         for po_filename in getPoFiles(self.product_name):
             test_ensemble = TestPoFile(po_filename, self.product_name)
             test_ensemble.testPoFile()
+            test_ensemble.testNoDuplicateMsgId()
 
 
 # DOTALL: Make the "." special character match any character at all, including a
@@ -113,23 +114,19 @@ class TestPotFile(unittest.TestCase):
         self.product_name = product_name
 
     def testNoDuplicateMsgId(self):
-        """Check that there are no duplicate msgid:s in the pot files"""
-
+        """Check that there are no duplicate msgids in the pot files"""
         pot = self.pot_filename
-
         file = open(os.path.join(getI18nDirPath(self.product_name), pot), 'r')
         file_content = file.read()
         file.close()
 
         # Check for duplicate msgids
         matches = re.finditer(MSGID_REGEXP, file_content)
-
         msgids = []
-
         for match in matches:
             msgid = match.group(0)
             if msgid in msgids:
-                assert 0, "Duplicate msgid:s were found in the file %s :\n\n%s" \
+                assert 0, "Duplicate msgids were found in file \"%s\":\n\n%s" \
                        % (pot, msgid)
             else:
                 msgids.append(msgid)
@@ -180,7 +177,7 @@ class TestPoFile(unittest.TestCase):
         try:
             lines = file.readlines()
         except IOError, msg:
-            self.fail('Can\'t read po file %s:\n%s' % (po_name, msg))
+            self.fail("Can't read po file %s:\n%s" % (po_name, msg))
         file.close()
 
         # Checking that the .po file has a non-fuzzy header entry, so that it
@@ -191,12 +188,12 @@ class TestPoFile(unittest.TestCase):
 
         if len(match_fuzzy) != 0:
             assert 0, "Fuzzy header entry found in file %s! " \
-               "Remove the fuzzy flag on this entry.\n\n" \
-               % po_name
+                   "Remove the fuzzy flag on this entry.\n" \
+                   % po_name
 
         if len(match_charset) != 1:
-            assert 0, "Invalid charset found in file %s! \n the correct " \
-               "line is : 'Content-Type: text/plain; charset=ISO-8859-15'\n\n" \
+            assert 0, "Invalid charset found in file %s!\n the correct " \
+               "line is : 'Content-Type: text/plain; charset=ISO-8859-15'\n" \
                % po_name
 
         try:
@@ -222,7 +219,11 @@ class TestPoFile(unittest.TestCase):
 
         domain = tro._info.get('domain', None)
         #print "domain = %s" % domain
-        self.failUnless(domain, 'Po file %s has no domain!' % po)
+        self.failUnless(domain,
+                        "In its header entry, the file \"%s\" should "
+                        "have a line stating \"Domain: xxx\".\n"
+                        "Usually in CPS we use \"Domain: default\".\n"
+                        % po_name)
 
         language_new = tro._info.get('language-code', None) # new way
         #print "language_new = %s" % language_new
@@ -230,25 +231,25 @@ class TestPoFile(unittest.TestCase):
         #print "language_old = %s" % language_old
         language = language_new or language_old
 
-        self.failIf(language_old, 'The file %s has the old style language flag \
-                                   set to %s. Please remove it!' \
-                                  % (po_name, language_old))
+        self.failIf(language_old,
+                    "The file %s has the old style language flag "
+                    "set to %s. Please remove it!"
+                    % (po_name, language_old))
 
         self.failUnless(language, 'Po file %s has no language!' % po)
 
-        fileLang = getLanguageFromPoFile(po)
-        #print "getLanguageFromPoFile = %s" % fileLang
-        fileLang = canonizeLang(fileLang)
-        #print "canonizeLang = %s" % fileLang
+        file_lang = getLanguageFromPoFile(po)
+        #print "getLanguageFromPoFile = %s" % file_lang
+        file_lang = canonizeLang(file_lang)
+        #print "canonizeLang = %s" % file_lang
         language = canonizeLang(language)
         #print "language canonizeLang(language) = %s" % language
-        self.assertEquals(fileLang, language,
-                          "Your file %s has a wrong file name "
-                          "or states a wrong language code.\n"
-                          "Your file %s should either "
-                          "be named \"%s.po\" "
-                          "or have a line stating \"Language-code: %s\n\""
-                          % (po_name, po_name, language, fileLang))
+        self.assertEquals(file_lang, language,
+                          "The file \"%s\" states a wrong language code.\n"
+                          "In its header entry, the file \"%s\" should "
+                          "have a line stating \"Language-Code: %s\" "
+                          "instead of \"Language-Code: %s\".\n"
+                          % (po_name, po_name, file_lang, language))
 
 
         # i18n completeness chart generation mechanism relies on case sensitive
@@ -257,7 +258,7 @@ class TestPoFile(unittest.TestCase):
                           '"Language-Name: ',
                           '"Domain: ',
                           ]:
-            # XXX: Get rid of this "grep"!
+            # TODO: Get rid of this "grep"!
             import commands
             cmd = """grep '%s' %s/%s""" % (
                 meta_info, getI18nDirPath(self.product_name), po_name)
@@ -266,8 +267,29 @@ class TestPoFile(unittest.TestCase):
             #print "status = %s" % statusoutput[0]
             #print "output = %s" % statusoutput[1]
             self.assert_(statusoutput[0] == 0,
-                         "Wrong case used for metadata in file %s! "
-                         "Check that your metadata is "
-                         "Language-Code, Language-Name and Domain.\n\n%s"
-                         % (po_name, statusoutput[1]))
+                         "The file \"%s\" has a wrong spelling for "
+                         "metainfo %sxxx\".\n"
+                         "In its header entry, the file \"%s\" should "
+                         "have the metainfo spelled like %sxxx\".\n"
+                         "Check that you are using mixed case spelling!\n%s"
+                         % (po_name, meta_info, po_name, meta_info,
+                            statusoutput[1]))
 
+
+    def testNoDuplicateMsgId(self):
+        """Check that there are no duplicate msgids in the po files"""
+        po = self.po_filename
+        file = open(os.path.join(getI18nDirPath(self.product_name), po), 'r')
+        file_content = file.read()
+        file.close()
+
+        # Check for duplicate msgids
+        matches = re.finditer(MSGID_REGEXP, file_content)
+        msgids = []
+        for match in matches:
+            msgid = match.group(0)
+            if msgid in msgids:
+                assert 0, "Duplicate msgids were found in file \"%s\":\n\n%s" \
+                       % (po, msgid)
+            else:
+                msgids.append(msgid)
