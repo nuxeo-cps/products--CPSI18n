@@ -242,10 +242,14 @@ class TestPoFile(unittest.TestCase):
         #print "canonizeLang = %s" % fileLang
         language = canonizeLang(language)
         #print "language canonizeLang(language) = %s" % language
-        self.failUnless(fileLang == language,
-            'The file %s has the wrong name or wrong language code. \
-             expected: %s, got: %s' % \
-             (po_name, language, fileLang))
+        self.assertEquals(fileLang, language,
+                          "Your file %s has a wrong file name "
+                          "or states a wrong language code.\n"
+                          "Your file %s should either "
+                          "be named \"%s.po\" "
+                          "or have a line stating \"Language-code: %s\n\""
+                          % (po_name, po_name, language, fileLang))
+
 
         # i18n completeness chart generation mechanism relies on case sensitive
         # Language-Code and Language-Name.
