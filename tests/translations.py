@@ -251,6 +251,27 @@ class TestPoFile(unittest.TestCase):
                           "instead of \"Language-Code: %s\".\n"
                           % (po_name, po_name, file_lang, language))
 
+        language_name = tro._info.get('language-name', None)
+        language_names = {'en': 'English',
+                          'fr': 'French',
+                          'it': 'Italian',
+                          'es': 'Spanish',
+                          'eu': 'Basque',
+                          #'pt-br': 'Brazilian',
+                          'pt-br': 'Portuguese Brazilian',
+                          'ro': 'Romanian',
+                          'de': 'German',
+                          'mg': 'Malagasy',
+                          'nl': 'Dutch',
+                          'sv': 'Swedish',
+                          }
+        self.assertEquals(language_name, language_names[file_lang],
+                          "The file \"%s\" states a wrong language name.\n"
+                          "In its header entry, the file \"%s\" should "
+                          "have a line stating \"Language-Name: %s\" "
+                          "instead of \"Language-Name: %s\".\n"
+                          % (po_name, po_name,
+                             language_names[file_lang], language_name))
 
         # i18n completeness chart generation mechanism relies on case sensitive
         # Language-Code and Language-Name.
