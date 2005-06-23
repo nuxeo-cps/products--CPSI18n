@@ -45,13 +45,9 @@ def canonizeLang(lang):
 def getLanguageCodeFromPoFileName(file_path):
     """Return the language code from the file name of the given file.
     """
-    file_name = file_path.split('/')[-1]
+    file_name = os.path.basename(file_path)
     # Strip of the .po suffix
-    language_code = file[:-3]
-    # TODO: Make it work with CPSSkins
-    # This code was for CPSSkins which has .po of the form cpsskins-en.po
-    #lang = file.split('-')[1:][-1:]
-    #return '-'.join(lang)
+    language_code = file_name[:-3]
     return language_code
 
 
