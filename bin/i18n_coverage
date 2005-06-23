@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-# $Id: BaseBox.py 7293 2005-04-03 23:09:11Z janguenot $
+# $Id$
 """Generation of a 'po' translated graphic for all the products.
 
 The dependencies are:
@@ -61,10 +61,10 @@ def execArgs():
     usage = """usage: %prog [options] [Products]
 
 Examples:
-$ ./i18n_coverage --vverbose --dir /var/lib/zope2.7/instance_1/Products CPSDefault CPSDirectory CPSBlog -eCPSSkins
+$ %prog --vverbose --dir /var/lib/zope2.7/instance_1/Products CPSDefault CPSDirectory CPSBlog -eCPSSkins
 
 $ cd /var/lib/zope2.7/instance_1/Products
-$ ./i18n_coverage -v CPS* -eCPSSkins
+$ %prog -v CPS* -eCPSSkins
 """
     parser = OptionParser(usage=usage)
 
