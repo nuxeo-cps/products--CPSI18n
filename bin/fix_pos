@@ -119,7 +119,9 @@ def fixLanguageCode(language_code, po_file_path, file_content):
     return file_content
 
 
-LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: \w+\\n"',
+# Some language names such as "Portuguese Brazilian" may be defined by many
+# words, hence [\w ]+
+LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: [\w ]+\\n"',
                                   re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageName(language_code, po_file_path, file_content):
