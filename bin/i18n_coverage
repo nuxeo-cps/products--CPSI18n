@@ -38,7 +38,7 @@ except ImportError:
     # Program will work, but without graphic generation
     gdchart = None
 
-DEFAULT_GRAPHIC_FILE_PATH = './i18n_coverage.png'
+DEFAULT_GRAPHIC_FILE_PATH = 'i18n_coverage.png'
 
 # Color coefficient for 3D Bar determined by the percentage
 COLOR_STEP = 2
@@ -205,8 +205,9 @@ def sortFunction(str1, str2):
 # msgid "CatalogNavigation"
 # msgstr "Navigation"
 #
-FUZZY_REGEXP = re.compile(r'((#, fuzzy\nmsgid "[^\n]+?"\n|#, fuzzy\nmsgid ""' \
-                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
+FUZZY_REGEXP = re.compile(
+    r'((#, fuzzy\nmsgid "[^\n]+?"\n|#, fuzzy\nmsgid ""\n("[^\n]+"\n)+?)msgstr ")',
+    re.DOTALL)
 
 # msgid "batch_next_x_items"
 # msgstr ""
@@ -217,8 +218,9 @@ FUZZY_REGEXP = re.compile(r'((#, fuzzy\nmsgid "[^\n]+?"\n|#, fuzzy\nmsgid ""' \
 # "\"class info/review_state\">Work</span> </block>"
 # msgstr ""
 #
-EMPTY_REGEXP = re.compile(r'((msgid "[^\n]+?"\n|msgid ""' \
-                                '\n("[^\n]+"\n)+?)msgstr ""\n\n)', re.DOTALL)
+EMPTY_REGEXP = re.compile(
+    r'((msgid "[^\n]+?"\n|msgid ""\n("[^\n]+"\n)+?)msgstr ""\n\n)',
+    re.DOTALL)
 
 
 
