@@ -42,18 +42,17 @@ def canonizeLang(lang):
     return lang.lower().replace('_', '-')
 
 
-def getLanguageFromPoFile(file_path):
-    """Check that the same of the .po file corresponds to the contained
-    translations.
+def getLanguageCodeFromPoFileName(file_path):
+    """Return the language code from the file name of the given file.
     """
-    # get file
-    file = file_path.split('/')[-1]
-    # strip of .po
-    file = file[:-3]
+    file_name = file_path.split('/')[-1]
+    # Strip of the .po suffix
+    language_code = file[:-3]
+    # TODO: Make it work with CPSSkins
     # This code was for CPSSkins which has .po of the form cpsskins-en.po
     #lang = file.split('-')[1:][-1:]
     #return '-'.join(lang)
-    return file
+    return language_code
 
 
 def getI18nDirPath(product_name):
@@ -238,8 +237,8 @@ class TestPoFile(unittest.TestCase):
 
         self.failUnless(language, 'Po file %s has no language!' % po)
 
-        file_lang = getLanguageFromPoFile(po)
-        #print "getLanguageFromPoFile = %s" % file_lang
+        file_lang = getLanguageCodeFromPoFileName(po)
+        #print "getLanguageCodeFromPoFileName = %s" % file_lang
         file_lang = canonizeLang(file_lang)
         #print "canonizeLang = %s" % file_lang
         language = canonizeLang(language)

@@ -1,0 +1,143 @@
+#!/usr/bin/python
+#
+# (C) Copyright 2005 Nuxeo SARL <http://nuxeo.com>
+# Authors:
+# M.-A. Darche <madarche@nuxeo.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# $Id$
+"""This program fixes .po files by modifying their header entry if needed.
+"""
+
+import os, os.path, sys, string, re
+from optparse import OptionParser
+
+LANGUAGE_NAMES = {'en': 'English',
+                  'fr': 'French',
+                  'it': 'Italian',
+                  'es': 'Spanish',
+                  'eu': 'Basque',
+                  #'pt-br': 'Brazilian',
+                  'pt-br': 'Portuguese Brazilian',
+                  'ro': 'Romanian',
+                  'de': 'German',
+                  'mg': 'Malagasy',
+                  'nl': 'Dutch',
+                  'sv': 'Swedish',
+                  }
+
+DEFAULT_DOMAIN = 'default'
+
+
+def execArgs():
+    """Analyze command line arguments.
+    """
+    usage = """usage: %prog [.po files]
+
+Examples:
+$ %prog /var/lib/zope2.7/instance_1/Products/CPSDefault/es.po
+$ %prog /var/lib/zope2.7/instance_1/Products/CPSDefault/*.po
+$ find /var/lib/zope2.7/instance_1/Products -name "*.po" -print0 | xargs -0 %prog
+$ find . -name "*.po" -print0 | xargs -0 %prog
+"""
+    parser = OptionParser(usage=usage)
+
+    parser.add_option('-v', '--verbose',
+                      action='store_true',
+                      dest='verbose',
+                      default=False,
+                      help="Display more details")
+
+    parser.add_option('-d', '--domain',
+                      action="store",
+                      type="string",
+                      dest="domain",
+                      default=DEFAULT_DOMAIN,
+                      help="Specify the domain to set in the .po file. "
+                      "Default is: %s" % DEFAULT_DOMAIN)
+
+    (options, args) = parser.parse_args()
+
+    if len(args) != 0:
+        po_file_paths = args
+        log("po_file_paths = %s" % po_file_paths)
+        for po_file_path in po_file_paths:
+            fixPoFile(po_file_path, options.domain)
+
+
+def fixPoFile(po_file_path, domain):
+    log("po_file_path = %s" % po_file_path)
+    log("domain = %s" % domain)
+    language_code = getLanguageCodeFromPoFileName(po_file_path)
+    log("language_code = %s" % language_code)
+    file = open(po_file_path, 'r')
+    file_content = file.read()
+    file.close()
+    file_content = fixLanguageCode(language_code, po_file_path, file_content)
+    file_content = fixLanguageName(language_code, po_file_path, file_content)
+    file_content = fixDomain(domain, po_file_path, file_content)
+    file = open(po_file_path, 'w')
+    file.write(file_content)
+    file.close()
+
+
+LANGUAGE_CODE_REGEXP = re.compile(r'^"language-code: \w+\\n"',
+                           re.MULTILINE | re.IGNORECASE)
+
+def fixLanguageCode(language_code, po_file_path, file_content):
+    file_content = LANGUAGE_CODE_REGEXP.sub(r'"Language-Code: %s\\n"'
+                                            % language_code,
+                                            file_content)
+    return file_content
+
+
+LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: \w+\\n"',
+                           re.MULTILINE | re.IGNORECASE)
+
+def fixLanguageName(language_code, po_file_path, file_content):
+    language_name = LANGUAGE_NAMES.get(language_code, language_code)
+    file_content = LANGUAGE_NAME_REGEXP.sub(r'"Language-Name: %s\\n"'
+                                            % language_name,
+                                            file_content)
+    return file_content
+
+
+DOMAIN_REGEXP = re.compile(r'^"domain: \w+\\n"',
+                           re.MULTILINE | re.IGNORECASE)
+
+def fixDomain(domain, po_file_path, file_content):
+    file_content = DOMAIN_REGEXP.sub(r'"Domain: %s\\n"' % domain, file_content)
+    return file_content
+
+
+def getLanguageCodeFromPoFileName(file_path):
+    """Return the language code from the file name of the given file.
+    """
+    file_name = os.path.basename(file_path)
+    log("file_name = %s" % file_name)
+    # Strip of the .po suffix
+    language_code = file_name[:-3]
+    return language_code
+
+
+def log(message):
+    """Log the given message to stderr.
+    """
+    print >> sys.stderr, message
+
+
+
+execArgs()
