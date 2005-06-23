@@ -48,10 +48,8 @@ LANGUAGE_NAMES = {'en': 'English',
                   'mg': 'Malagasy',
                   'nl': 'Dutch',
                   'sv': 'Swedish',
-                  # 'pt_br': 'Brazilian',
-                  # 'pt_BR': 'Brazilian',
-                  'pt_br': 'Portuguese Brazilian',
-                  'pt_BR': 'Portuguese Brazilian',
+                  'pt_br': 'Brazilian',
+                  'pt_BR': 'Brazilian',
                   }
 
 DEFAULT_GRAPHIC_FILE_PATH = 'i18n_coverage.png'
