@@ -63,7 +63,7 @@ def execArgs():
 Examples:
 $ %prog --vverbose --dir /var/lib/zope2.7/instance_1/Products CPSDefault CPSDirectory CPSBlog -eCPSSkins
 
-$ cd /var/lib/zope2.7/instance_1/Products
+$ cd /var/lib/zope2.7/instance/my_instance/Products
 $ %prog -v CPS* -eCPSSkins
 """
     parser = OptionParser(usage=usage)
