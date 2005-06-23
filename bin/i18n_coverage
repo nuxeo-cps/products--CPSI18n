@@ -132,12 +132,13 @@ $ %prog -v CPS* -eCPSSkins
 # msgid "accessibility_shortcut_menu"
 # msgstr "Go to the menu"
 #
-TRANSLATION_REGEXP = re.compile(r'((\nmsgid "[^\n]+?"\n|msgid ""' \
-                                '\n("[^\n]+"\n)+?)msgstr ")', re.DOTALL)
+TRANSLATION_REGEXP = re.compile(
+    r'((\nmsgid "[^\n]+?"\n|msgid ""\n("[^\n]+"\n)+?)msgstr ")',
+    re.DOTALL)
 
 def getLanguagesInformations(path):
     """Return a list of all language names included in the
-    whole CPS products, example : ['fr', 'en', ...]
+    whole CPS products, example: ['fr', 'en', ...]
     """
     list_po_name = []
     list_total_msgids = []
@@ -335,7 +336,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     values = values[0:1]
     names = names[0:1]
     colors = colors[0:1]
-    for v,n,c in z:
+    for v, n, c in z:
         values.append(v)
         names.append(n)
         colors.append(c)
