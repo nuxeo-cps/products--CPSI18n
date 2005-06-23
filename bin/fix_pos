@@ -30,13 +30,15 @@ LANGUAGE_NAMES = {'en': 'English',
                   'it': 'Italian',
                   'es': 'Spanish',
                   'eu': 'Basque',
-                  #'pt-br': 'Brazilian',
-                  'pt-br': 'Portuguese Brazilian',
                   'ro': 'Romanian',
                   'de': 'German',
                   'mg': 'Malagasy',
                   'nl': 'Dutch',
                   'sv': 'Swedish',
+                  # 'pt_br': 'Brazilian',
+                  # 'pt_BR': 'Brazilian',
+                  'pt_br': 'Portuguese Brazilian',
+                  'pt_BR': 'Portuguese Brazilian',
                   }
 
 DEFAULT_DOMAIN = 'default'
@@ -70,6 +72,8 @@ $ find . -name "*.po" -print0 | xargs -0 %prog
                       "Default is: %s" % DEFAULT_DOMAIN)
 
     (options, args) = parser.parse_args()
+    global verbose
+    verbose = options.verbose
 
     if len(args) != 0:
         po_file_paths = args
@@ -94,24 +98,43 @@ def fixPoFile(po_file_path, domain):
     file.close()
 
 
+HEADER_ENTRY_REGEXP = re.compile(r'^msgid ""\nmsgstr ""\n(^".*\\n"\n)*',
+                                 re.MULTILINE)
+
 LANGUAGE_CODE_REGEXP = re.compile(r'^"language-code: \w+\\n"',
-                           re.MULTILINE | re.IGNORECASE)
+                                  re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageCode(language_code, po_file_path, file_content):
-    file_content = LANGUAGE_CODE_REGEXP.sub(r'"Language-Code: %s\\n"'
-                                            % language_code,
-                                            file_content)
+    """If there is a Language-Code metadata, it makes sure that this metadata
+    has a correct value, otherwise the Language-Code metadata is added.
+    """
+    language_code_statement = r'"Language-Code: %s\\n"' % language_code
+    if LANGUAGE_CODE_REGEXP.search(file_content) is not None:
+        file_content = LANGUAGE_CODE_REGEXP.sub(language_code_statement,
+                                                file_content)
+    else:
+        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n'
+                                               % language_code_statement,
+                                               file_content)
     return file_content
 
 
 LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: \w+\\n"',
-                           re.MULTILINE | re.IGNORECASE)
+                                  re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageName(language_code, po_file_path, file_content):
+    """If there is a Language-Name metadata, it makes sure that this metadata
+    has a correct value, otherwise the Language-Name metadata is added.
+    """
     language_name = LANGUAGE_NAMES.get(language_code, language_code)
-    file_content = LANGUAGE_NAME_REGEXP.sub(r'"Language-Name: %s\\n"'
-                                            % language_name,
-                                            file_content)
+    language_name_statement = r'"Language-Name: %s\\n"' % language_name
+    if LANGUAGE_NAME_REGEXP.search(file_content) is not None:
+        file_content = LANGUAGE_NAME_REGEXP.sub(language_name_statement,
+                                                file_content)
+    else:
+        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n'
+                                               % language_name_statement,
+                                               file_content)
     return file_content
 
 
@@ -119,7 +142,16 @@ DOMAIN_REGEXP = re.compile(r'^"domain: \w+\\n"',
                            re.MULTILINE | re.IGNORECASE)
 
 def fixDomain(domain, po_file_path, file_content):
-    file_content = DOMAIN_REGEXP.sub(r'"Domain: %s\\n"' % domain, file_content)
+    """If there is a Domain metadata, it makes sure that this metadata
+    has a correct value, otherwise the Domain metadata is added.
+    """
+    domain_statement = r'"Domain: %s\\n"' % domain
+    if DOMAIN_REGEXP.search(file_content) is not None:
+        file_content = DOMAIN_REGEXP.sub(domain_statement,
+                                         file_content)
+    else:
+        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n' % domain_statement,
+                                               file_content)
     return file_content
 
 
@@ -133,11 +165,11 @@ def getLanguageCodeFromPoFileName(file_path):
     return language_code
 
 
-def log(message):
+def log(message, force=False):
     """Log the given message to stderr.
     """
-    print >> sys.stderr, message
-
+    if force or verbose:
+        print >> sys.stderr, message
 
 
 execArgs()
