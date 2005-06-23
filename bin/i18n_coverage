@@ -38,6 +38,22 @@ except ImportError:
     # Program will work, but without graphic generation
     gdchart = None
 
+LANGUAGE_NAMES = {'en': 'English',
+                  'fr': 'French',
+                  'it': 'Italian',
+                  'es': 'Spanish',
+                  'eu': 'Basque',
+                  'ro': 'Romanian',
+                  'de': 'German',
+                  'mg': 'Malagasy',
+                  'nl': 'Dutch',
+                  'sv': 'Swedish',
+                  # 'pt_br': 'Brazilian',
+                  # 'pt_BR': 'Brazilian',
+                  'pt_br': 'Portuguese Brazilian',
+                  'pt_BR': 'Portuguese Brazilian',
+                  }
+
 DEFAULT_GRAPHIC_FILE_PATH = 'i18n_coverage.png'
 
 # Color coefficient for 3D Bar determined by the percentage
@@ -319,7 +335,8 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
             value = msgids_total
 
         list_results.append(result_line)
-        names.append(language)
+        names.append("%s (%s)"
+                     % (LANGUAGE_NAMES.get(language, language), language))
         values.append(value)
         colors.append(colors[0] * (101 - complete) * COLOR_STEP)
 
