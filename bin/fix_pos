@@ -42,6 +42,7 @@ LANGUAGE_NAMES = {'en': 'English',
                   }
 
 DEFAULT_DOMAIN = 'default'
+DEFAULT_CHARSET = 'ISO-8859-15'
 
 
 def execArgs():
@@ -71,6 +72,14 @@ $ find . -name "*.po" -print0 | xargs -0 %prog
                       help="Specify the domain to set in the .po file. "
                       "Default is: %s" % DEFAULT_DOMAIN)
 
+    parser.add_option('-c', '--charset',
+                      action="store",
+                      type="string",
+                      dest="charset",
+                      default=DEFAULT_CHARSET,
+                      help="Specify the charset to set in the .po file. "
+                      "Default is: %s" % DEFAULT_CHARSET)
+
     (options, args) = parser.parse_args()
     global verbose
     verbose = options.verbose
@@ -79,10 +88,10 @@ $ find . -name "*.po" -print0 | xargs -0 %prog
         po_file_paths = args
         log("po_file_paths = %s" % po_file_paths)
         for po_file_path in po_file_paths:
-            fixPoFile(po_file_path, options.domain)
+            fixPoFile(po_file_path, options.domain, options.charset)
 
 
-def fixPoFile(po_file_path, domain):
+def fixPoFile(po_file_path, domain, charset):
     log("po_file_path = %s" % po_file_path)
     log("domain = %s" % domain)
     language_code = getLanguageCodeFromPoFileName(po_file_path)
@@ -90,6 +99,7 @@ def fixPoFile(po_file_path, domain):
     file = open(po_file_path, 'r')
     file_content = file.read()
     file.close()
+    file_content = fixContentType(charset, po_file_path, file_content)
     file_content = fixLanguageCode(language_code, po_file_path, file_content)
     file_content = fixLanguageName(language_code, po_file_path, file_content)
     file_content = fixDomain(domain, po_file_path, file_content)
@@ -105,38 +115,48 @@ LANGUAGE_CODE_REGEXP = re.compile(r'^"language-code: \w+\\n"',
                                   re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageCode(language_code, po_file_path, file_content):
-    """If there is a Language-Code metadata, it makes sure that this metadata
-    has a correct value, otherwise the Language-Code metadata is added.
+    """Removes any Language-Code metadata and add a new one with a correct
+    value.
     """
     language_code_statement = r'"Language-Code: %s\\n"' % language_code
-    if LANGUAGE_CODE_REGEXP.search(file_content) is not None:
-        file_content = LANGUAGE_CODE_REGEXP.sub(language_code_statement,
-                                                file_content)
-    else:
-        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n'
-                                               % language_code_statement,
-                                               file_content)
+    file_content = LANGUAGE_CODE_REGEXP.sub('', file_content)
+    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s'
+                                           % language_code_statement,
+                                           file_content)
     return file_content
 
 
 # Some language names such as "Portuguese Brazilian" may be defined by many
-# words, hence [\w ]+
-LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: [\w ]+\\n"',
+# words, hence [\S ]+. Note that one cannot use [\w ]+ since translators may
+# have use accented characters for their language names.
+LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: [\S ]+\\n"',
                                   re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageName(language_code, po_file_path, file_content):
-    """If there is a Language-Name metadata, it makes sure that this metadata
-    has a correct value, otherwise the Language-Name metadata is added.
+    """Removes any Language-Name metadata and add a new one with a correct
+    value.
     """
     language_name = LANGUAGE_NAMES.get(language_code, language_code)
     language_name_statement = r'"Language-Name: %s\\n"' % language_name
-    if LANGUAGE_NAME_REGEXP.search(file_content) is not None:
-        file_content = LANGUAGE_NAME_REGEXP.sub(language_name_statement,
-                                                file_content)
-    else:
-        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n'
-                                               % language_name_statement,
-                                               file_content)
+    file_content = LANGUAGE_NAME_REGEXP.sub('', file_content)
+    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s'
+                                           % language_name_statement,
+                                           file_content)
+    return file_content
+
+
+CONTENT_TYPE_REGEXP = re.compile(r'^"content-type: [\S ]+\\n"',
+                                 re.MULTILINE | re.IGNORECASE)
+
+def fixContentType(charset, po_file_path, file_content):
+    """Removes any Domain metadata and add a new one with a correct
+    value.
+    """
+    content_type_statement = r'"Content-Type: text/plain; charset=%s\\n"' \
+                             % charset
+    file_content = CONTENT_TYPE_REGEXP.sub('', file_content)
+    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % content_type_statement,
+                                           file_content)
     return file_content
 
 
@@ -144,16 +164,13 @@ DOMAIN_REGEXP = re.compile(r'^"domain: \w+\\n"',
                            re.MULTILINE | re.IGNORECASE)
 
 def fixDomain(domain, po_file_path, file_content):
-    """If there is a Domain metadata, it makes sure that this metadata
-    has a correct value, otherwise the Domain metadata is added.
+    """Removes any Domain metadata and add a new one with a correct
+    value.
     """
     domain_statement = r'"Domain: %s\\n"' % domain
-    if DOMAIN_REGEXP.search(file_content) is not None:
-        file_content = DOMAIN_REGEXP.sub(domain_statement,
-                                         file_content)
-    else:
-        file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s\n' % domain_statement,
-                                               file_content)
+    file_content = DOMAIN_REGEXP.sub('', file_content)
+    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % domain_statement,
+                                           file_content)
     return file_content
 
 
