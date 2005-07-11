@@ -243,7 +243,7 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
     """
     global detail
     available_languages, msgids_total = getLanguagesInformations(path)
-    names = ['Total']
+    names = ['Total of messages']
     values = [msgids_total]
     colors = [0x00ff00] # green
     size = (800, 500)
@@ -366,6 +366,8 @@ def makeChart(path, export_file_path=DEFAULT_GRAPHIC_FILE_PATH):
                    'title': chart_title,
                    'ext_color': colors,
                    'format': gdchart.GDC_PNG,
+                   'xtitle': "Languages",
+                   'ytitle': "Number of translated messages",
                    }
 
         gdchart.option(**options)
