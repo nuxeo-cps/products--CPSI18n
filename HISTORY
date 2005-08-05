@@ -1,4 +1,26 @@
 *******************************************
+** CPSI18n V0.2.0 [R1 build 2005/08/05-13:55 by ben]
+** SVN URL: https://svn.nuxeo.org/pub/CPSI18n/trunk Revision: 25426
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Added an i18n_coverage script (with graphic generation).
+- Added a centralized tests.translations module that all products could and
+  should use to test the well-formedness and quality of their .pot and .po
+  files.
+- Added a fix_pos script for faster integration of translator contributors'
+  work.
+Bug fixes:
+~~~~~~~~~~
+- changed the definition of $PWD in make_pot to be consistent with inc.sh and
+  use `$PWD` instead of $PWD
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSI18n V0.1.1 [R1 build 2005/05/30-12:38 by madarche]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSI18n/trunk Revision: 21917
 Requires:
