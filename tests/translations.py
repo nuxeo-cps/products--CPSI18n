@@ -116,7 +116,7 @@ class TestPotFile(unittest.TestCase):
         file.close()
 
         # Check for duplicate msgids
-        matches = re.finditer(MSGID_REGEXP, file_content)
+        matches = MSGID_REGEXP.finditer(file_content)
         msgids = []
         for match in matches:
             msgid = match.group(0)
@@ -177,9 +177,9 @@ class TestPoFile(unittest.TestCase):
 
         # Checking that the .po file has a non-fuzzy header entry, so that it
         # cannot be deleted by error.
-        match_fuzzy = re.findall(FUZZY_HEADER_ENTRY_REGEXP, file_content)
+        match_fuzzy = FUZZY_HEADER_ENTRY_REGEXP.findall(file_content)
 
-        match_charset = re.findall(CHARSET_REGEXP, file_content)
+        match_charset = CHARSET_REGEXP.findall(file_content)
 
         if len(match_fuzzy) != 0:
             assert 0, "Fuzzy header entry found in file %s! " \
@@ -301,7 +301,7 @@ class TestPoFile(unittest.TestCase):
         file.close()
 
         # Check for duplicate msgids
-        matches = re.finditer(MSGID_REGEXP, file_content)
+        matches = MSGID_REGEXP.finditer(file_content)
         msgids = []
         for match in matches:
             msgid = match.group(0)

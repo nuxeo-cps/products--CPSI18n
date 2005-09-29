@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Better use of compiled regexps.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
