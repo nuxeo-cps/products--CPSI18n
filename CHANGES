@@ -6,6 +6,8 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
+- Made the update_pos script look for .z?pt files everywhere in the product tree
+  structure and not only in the "skins" subdirectory. This fixes #1019.
 - Better use of compiled regexps.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~

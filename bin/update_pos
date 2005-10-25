@@ -151,7 +151,7 @@ if [ $? -eq 0 ] ; then
     $ECHO "update_pos **needs** to be executed within the i18n directory"
     exit 1
 fi
-SKINS_PATH="../skins/"
+SKINS_PATH=".."
 
 if [[ -n $verbose ]]; then
   $ECHO "################################################"
