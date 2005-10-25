@@ -151,7 +151,9 @@ if [ $? -eq 0 ] ; then
     $ECHO "update_pos **needs** to be executed within the i18n directory"
     exit 1
 fi
-SKINS_PATH=".."
+
+# Where to look for the .z?pt files
+ZPT_PATH=".."
 
 if [[ -n $verbose ]]; then
   $ECHO "################################################"
@@ -165,7 +167,7 @@ fi
 # file. This file name is $POT_FILE_NAME
 getPotName
 chmod a+w $POT_FILE_NAME
-$PYTHON_BIN $PARSER_SCRIPT -o $POT_FILE_NAME $SKINS_PATH
+$PYTHON_BIN $PARSER_SCRIPT -o $POT_FILE_NAME $ZPT_PATH
 
 # Checking the ZPT's po file well-formedness
 checkPoFile $POT_FILE_NAME
