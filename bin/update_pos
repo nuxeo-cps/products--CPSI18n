@@ -21,10 +21,10 @@ $prog_name [options]
 help() {
 echo "
 $usage
-This script scans the skins directory for ZPT files to find strings to
-translate. It updates the pot/pos files inside the i18n directory of the product
-in which the script is run. Afterward one can then safely and very easily
-update the *.po files for untranslated messages.
+This script scans the skins directory for ZPT files (*.zpt and *.pt) to find
+strings to translate. It updates the pot/pos files inside the i18n directory of
+the product in which the script is run. Afterward one can then safely and very
+easily update the *.po files for untranslated messages.
 
 This script relies on the following software, so make sure they are installed on
 your system and available for $prog_name:
@@ -167,7 +167,8 @@ fi
 # file. This file name is $POT_FILE_NAME
 getPotName
 chmod a+w $POT_FILE_NAME
-$PYTHON_BIN $PARSER_SCRIPT -o $POT_FILE_NAME $ZPT_PATH
+$PYTHON_BIN $PARSER_SCRIPT \
+--output $POT_FILE_NAME --output-encoding='ISO-8859-15' $ZPT_PATH
 
 # Checking the ZPT's po file well-formedness
 checkPoFile $POT_FILE_NAME
