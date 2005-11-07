@@ -1,4 +1,24 @@
 *******************************************
+** CPSI18n V0.2.1 [R1 build 2005/11/07-15:21 by fguillaume]
+** SVN URL: https://svn.nuxeo.org/pub/CPSI18n/trunk Revision: 29057
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Made the update_pos script look for .z?pt files everywhere in the product tree
+  structure and not only in the "skins" subdirectory. This fixes #1019.
+- Made the update_pos script take advantage of the new i18n_xgettext.py
+  "--output-encoding" option. You need an updated version of OpenPTi18n.
+- Better use of compiled regexps.
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSI18n V0.2.0 [R1 build 2005/08/05-13:55 by ben]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSI18n/trunk Revision: 25426
 Requires:
