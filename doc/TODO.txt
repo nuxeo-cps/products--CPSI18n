@@ -1,0 +1,14 @@
+
+====
+TODO
+====
+
+*$Id$*
+
+
+The I18n process of CPS should be made easier and faster.
+
+One should read I18n with Five
+http://worldcookery.com/files/fivei18n/
+
+
