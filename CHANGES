@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Temporary fix for the not precise enough CHARSET regexp.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
