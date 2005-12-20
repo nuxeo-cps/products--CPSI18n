@@ -76,7 +76,8 @@ class TranslationsTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        self.product_name = __name__.split('.')[0]
+        product_name = [c for c in __name__.split('.') if c != 'Products'][0]
+        self.product_name = product_name
 
     def testPotFiles(self):
         for pot_filename in getPotFiles(self.product_name):
