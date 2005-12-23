@@ -9,4 +9,4 @@ Bug fixes:
 - Temporary fix for the not precise enough CHARSET regexp.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- add a DEPENDENCIES on svn OpenPTi18n
