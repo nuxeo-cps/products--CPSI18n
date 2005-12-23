@@ -1,0 +1,4 @@
+# $Id$
+
+# This package requires the OpenPTi18n zope products available from our svn:
+# svn co http://svn.nuxeo.org/pub/OpenPTi18n/trunk OpenPTi18n
