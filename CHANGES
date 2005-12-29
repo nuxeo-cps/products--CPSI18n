@@ -7,6 +7,9 @@ New features:
 Bug fixes:
 ~~~~~~~~~~
 - Temporary fix for the not precise enough CHARSET regexp.
+- CPSI18n doesn't depend on OpenPTi18n anymore. OpenPTi18n was causing problems
+  with Zope 2.9 and using update_pos is now easier since there are less
+  dependencies.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- add a DEPENDENCIES on svn OpenPTi18n
+

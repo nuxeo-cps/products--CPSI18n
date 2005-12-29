@@ -26,15 +26,10 @@ strings to translate. It updates the pot/pos files inside the i18n directory of
 the product in which the script is run. Afterward one can then safely and very
 easily update the *.po files for untranslated messages.
 
-This script relies on the following software, so make sure they are installed on
-your system and available for $prog_name:
+This script relies on the GNU Internationalization utilities, so be sure that
+you have the gettext package (or equivalent) on your system.
 
-  * the GNU Internationalization utilities,
-    be sure to have the gettext package (or equivalent)
-
-  * the OpenPTi18n Zope product
-
-This script relies on the PRODUCTS_DIR variable to find the OpenPTi18n product.
+This script relies on the PRODUCTS_DIR variable to find the CPSI18n product.
 So for this script to work, you need to set this variable.
 
 Example:
@@ -134,12 +129,12 @@ if [ -n $verbose ]; then
         $ECHO
 fi
 
-if [ ! -d $PRODUCTS_DIR/OpenPTi18n ]; then
-    $ECHO "You must install OpenPTi18n in your Products directory"
+if [ ! -d $PRODUCTS_DIR/CPSI18n ]; then
+    $ECHO "You must install CPSI18n in your Products directory"
     exit 1
 fi
 
-PARSER_SCRIPT=$PRODUCTS_DIR/OpenPTi18n/i18n_xgettext.py
+PARSER_SCRIPT=$PRODUCTS_DIR/CPSI18n/i18n_xgettext.py
 # Checking if we are in the i18n directory
 $PWD | grep "i18n" >> /dev/null
 if [ $? -eq 1 ] ; then
