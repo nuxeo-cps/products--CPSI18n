@@ -1,9 +1,12 @@
-
 ====
 TODO
 ====
 
-*$Id$*
+:Author: Marc-Aurèle DARCHE
+:Revision: $Id$
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
 
 
 The I18n process of CPS should be made easier and faster.
@@ -12,3 +15,7 @@ One should read I18n with Five
 http://worldcookery.com/files/fivei18n/
 
 
+.. Local Variables:
+.. mode: rst
+.. End:
+.. vim: set filetype=rst:

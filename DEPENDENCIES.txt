@@ -1,3 +1,33 @@
 # $Id$
 
+# Python --------------------
+#
+# pax and OpenTAL are needed for the i18n_xgettext.py script.
+
+# PAX - the "Pythonic API for XML" - is a XML-handling library
+pax >= -1.0a3
+
+# OpenTAL is used to navigate through the ZPT files
+OpenTAL >= 0.5
+
+
+cd /tmp
+tar xvf /home/download/_packages/pax-1.0a3.tar
+cd pax
+../python setup.py build
+../python setup.py install
+
+cd ..
+tar xvf /home/download/_packages/OpenTAL-0.5.tar
+cd OpenTAL
+../python setup.py build
+../python setup.py install
+
+# Troubleshooter: OpenTAL does not install ok using python2.4, but there's
+# a workaround to make it work: just change the evaluateText method
+# parameters (OpenTAL/Context.py, l.191 in version 0.5) from "def
+# evaluateText(self, expr, None=None):" to "def evaluateText(self, expr):",
+# as python2.4 does not allow assignments to None.
+
+rm -rf ./pax ./OpenTAL
 
