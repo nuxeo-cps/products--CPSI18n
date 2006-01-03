@@ -1,4 +1,4 @@
 #!/bin/sh
 
-find -name "*.po" -exec msgattrib --no-obsolete -o {} {} \n
+find -name "*.po" -exec msgattrib --no-obsolete -o {} {} \;
 
