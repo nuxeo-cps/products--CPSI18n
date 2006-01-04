@@ -207,6 +207,24 @@ If you want to add or fix something in this document, please join
 the list of CPS translators <cps-translators@lists.nuxeo.com>.
 
 
+Translation coverage
+====================
+
+The translation coverage for CPS 3.3.8 and the current developments (trunk) are
+respectively
+http://www.cps-project.org/static/i18n/CPS-3.3.8/i18n_coverage.png ,
+http://www.cps-project.org/static/i18n/CPS-trunk/i18n_coverage.png
+
+If you want to produce those graphs yourself you need to use the i18n_coverage
+script from the CPSI18n product and the gdchart python program (on Debian Sarge
+apt-get install python-gdchart libgdchart-gd1-noxpm).
+
+And here is a possible command line::
+
+  $ CPSI18n/bin/i18n_coverage -v --dir
+  /usr/local/zope/instance/cps-zope2.9/Products CPS* Cal* -eCPSSkins
+
+
 .. Local Variables:
 .. mode: rst
 .. End:
