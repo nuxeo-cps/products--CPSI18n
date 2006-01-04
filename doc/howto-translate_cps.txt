@@ -1,0 +1,213 @@
+=====================
+CPS Translation HOWTO
+=====================
+
+:Revision: $Id$
+
+:Abstract: This document gives some background information and tips
+    on translating CPS .po files.
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
+
+
+Each CPS product has an i18n directory containing all pot/po files
+plus some others. All of them should be translated.
+
+
+Definition
+==========
+
+PO file (.po file): PO stands for "Portable Object". PO files
+contain sets of strings which associate each translatable string
+with its translation in a particular language. A single PO file
+relates to only one language. A PO file is derived from a POT file
+and is edited either by hand or using KBabel.
+
+POT file (.pot file): POT stands for "Portable Object Template". A
+POT file is built by extracting all the translatable strings from
+application source files. A POT file does not contain translations
+into any particular language. It is used by the translators as a
+template.
+
+Message ID: msgid is the keyword which introduces the original
+string in a PO file. It is followed by a C-like string that spans
+one or more lines.
+
+Message String: msgstr is the keyword which introduces the
+translated string in PO file. It is followed by C-like string that
+spans on one or multiple lines.
+
+Fuzzy translation: This is a flag generated, in general, by
+msgmerge. It shows that a msgstr string might not be a correct
+translation. The translator must see and make modifications to the
+string if necessary and then remove the "fuzzy" flag from the
+message's comment.
+
+See:
+
+- http://docs.kde.org/en/3.3/kdesdk/kbabel/glossary.html
+
+- http://www.debian.org/doc/manuals/intro-i18n/
+
+
+Files
+=====
+
+- ``.config_pot``: Holds the name of the pot file which contains all
+  strings.
+
+- ``.blacklist_pot``: Holds the path to pot files from other
+  products so that you can use their msgids without having them
+  duplicated in your own pot file. Put a relative path per line.
+
+- ``custom.pot``: Contains dynamic strings which i18n tools can't
+  extract automatically: text inside Python modules or scripts,
+  text generated into scripts or templates...
+
+
+How to begin
+============
+
+To start your translation, make a copy of the master pot file.
+(This copy must be named according to i18n rules: en.po or
+en_US.po and not EN.po, en_us.po or en-US.po. Case and underscore
+are important.)
+
+Next, add your language in CPSDefault's custom.pot file. There's a
+Languages paragraph and the msgid will be like
+``label_language_en_US``.
+
+Then add your language to the language vocabulary defined in
+``CPSDocument/skins/cps_document/getDocumentVocabularies.py``.
+There are three keys to add: the first one is the i18n label, the
+same that you used to name your po file; the second one is how you
+name your language in your own language -- note how some strings
+are not to be translated; the third one is the msgid you used in
+CPSDefault's custom.pot file, it will be used when the vocabulary
+gets translated.
+
+Finally, modify the file
+``CPSDefault/zmi/manage_addCPSSiteForm.dtml``. There's a Languages
+box which contains a list of two element tuples. Add a new tuple
+for your language. The first element will be the i18n label and
+the second your language name in English.
+
+Now you can start translating message strings. You should use
+dedicated tools and should not handle it by hand so you will
+avoid most common mistakes.
+
+
+Software
+========
+
+KBabel runs under any Unix flavor where KDE is ported, which
+includes Cygwin for Windows.
+
+Xemacs has a po mode, hard to use, but very useful.
+
+GTranslator: Runs under any Unix flavor where Gnome is ported.
+
+poEdit: Runs under Linux and Windows (http://poedit.sourceforge.net/).
+
+
+Online tools
+============
+
+Automatic translations could be useful to recall a few vocabulary
+items, if you don't have a dictionary (either paper or online), but
+do NOT use them for translating a whole sentence: they won't do
+your job as well as yourself!
+
+Google's language tools: http://www.google.com/language_tools
+
+Babelfish: http://babelfish.altavista.com/babelfish/tr
+
+InterTran translation: http://www.tranexp.com:2000/Translate/result.shtml
+
+Grand dictionnaire terminologique (French/English/Latin technical
+terms): http://granddictionnaire.com/btml/fra/r_motclef/index800_1.asp
+
+Acronym Finder: http://www.acronymfinder.com/
+
+Cambridge Dictionaries online: http://dictionary.cambridge.org/
+
+Dictionary.com: http://www.dictionary.com/
+
+
+Good practices
+==============
+
+First, be sure you use the most up-to-date .po files. That is, make sure that
+you are getting the .po files from the last CPS release source archive or,
+better, that you are using them from a fresh SVN checkout
+http://svn.nuxeo.org/trac/pub/browser/ . The rationale is that the files on
+which you are working have certainly been modified (and sometimes fixed) since
+they have been released or that you have downloaded them, even if you are an
+official translator for a given language. This is because we use an automatic
+updater on all .po files.
+
+Never add a string outside custom.pot files. It would break
+our updater, and consequently delay the addition of your po files.
+For the same reason, do not use Localizer to export your files.
+
+Look at the context. The best way is to check where msgids appear
+in the site, then look at the msgid context in the product (po
+files and skins). If you have doubts, you can, in this order,
+check en.po, check another po file that you understand, then ask
+the CPS translators list <cps-translators@lists.nuxeo.com>.
+
+Once your translation is done and uploaded into CPS, test it
+against non-technical people, which are the common audience for
+CPS. This is necessary to make sure you don't use terms that are
+too technical or too abstract.
+
+For some odd reason, we cannot currently use UTF-8; so we have
+fallen back to ISO 8859-15 encoding (latin9). Since it will be the
+default encoding sent by CPS's main template, set it accordingly
+in your po editor. Diacritics signs (accents) or uncommon
+punctuation will be replaced by strange characters if you do not
+use the same encoding as ours... We know this sucks and we will
+use UTF-8 again as soon as possible. (TODO then add a note in the
+software section about the "recode" tool.)
+
+If you are in doubt about another translation you are using for
+inspiration, ask the mailing list so you can contact the upstream
+translator or people speaking that language.
+
+
+General rules
+=============
+
+Action names or page title:
+
+- Modify/Modification not Edit/Edition
+
+- Delete not Erase
+
+Form actions (buttons):
+
+- (button_change) Save changes not Modify/Change/Validate
+
+- (button_apply)  Apply not Change/View
+
+- (button_update) Update for a pop-up that update a field not Save
+
+- button_change not button_edit
+
+- (button_delete) Delete not Erase
+
+Others:
+
+- e-mail not mail/email
+
+- metadata not meta-data
+
+If you want to add or fix something in this document, please join
+the list of CPS translators <cps-translators@lists.nuxeo.com>.
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
+.. vim: set filetype=rst:
