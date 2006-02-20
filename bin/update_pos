@@ -225,7 +225,7 @@ ls *.po | while read po_file ; do
     # fr translations at the moment) so that we only end up with
     # meaningfull translations.
     case $po_file in
-        fr.po | mg.po | ro.po | it.po) po_reference_file=fr.po;;
+        fr.po | mg.po | it.po) po_reference_file=fr.po;;
         eu.po) po_reference_file=es.po;;
         *) po_reference_file=en.po;;
     esac
