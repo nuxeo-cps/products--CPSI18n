@@ -1,4 +1,4 @@
-# (C) Copyright 2005 Nuxeo SARL <http://nuxeo.com>
+# (C) Copyright 2005-2006 Nuxeo SAS <http://nuxeo.com>
 # (C) Copyright 2005 Unilog <http://unilog.com>
 # Authors:
 # M.-A. Darche <madarche@nuxeo.com>
@@ -61,13 +61,15 @@ def getI18nDirPath(product_name):
 
 def getPotFiles(product_name):
     i18n_dir_path = getI18nDirPath(product_name)
-    pot_files = [f for f in os.listdir(i18n_dir_path) if f.endswith('.pot')]
+    pot_files = [f for f in os.listdir(i18n_dir_path)
+                 if f.endswith('.pot') and not f.startswith('.')]
     return pot_files
 
 
 def getPoFiles(product_name):
     i18n_dir_path = getI18nDirPath(product_name)
-    po_files = [f for f in os.listdir(i18n_dir_path) if f.endswith('.po')]
+    po_files = [f for f in os.listdir(i18n_dir_path)
+                if f.endswith('.po') and not f.startswith('.')]
     return po_files
 
 

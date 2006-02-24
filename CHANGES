@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Made the .po and .pot files checking not choke on hidden or temporary files.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
