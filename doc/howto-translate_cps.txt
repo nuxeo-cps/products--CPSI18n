@@ -2,6 +2,9 @@
 CPS Translation HOWTO
 =====================
 
+:Authors: - Stefane Fermigier
+          - Marc-Aurèle Darche
+
 :Revision: $Id$
 
 :Abstract: This document gives some background information and tips
