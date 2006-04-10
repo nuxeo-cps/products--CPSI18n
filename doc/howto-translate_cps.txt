@@ -100,6 +100,14 @@ Now you can start translating message strings. You should use
 dedicated tools and should not handle it by hand so you will
 avoid most common mistakes.
 
+How to have CPS reread the translation files
+--------------------------------------------
+
+* For CPS >= 3.4.0. XXX: update!
+
+* For CPS < 3.4.0. : Go to the ZMI and select the
+  `i18n Updater`. Then select the `Test` tab.
+
 
 How to contribute your translation or translation updates
 =========================================================
