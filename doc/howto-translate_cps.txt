@@ -90,7 +90,7 @@ are not to be translated; the third one is the msgid you used in
 CPSDefault's custom.pot file, it will be used when the vocabulary
 gets translated.
 
-Finally, modify the file
+If you use CPS < 3.4, you will also need to modify the file
 ``CPSDefault/zmi/manage_addCPSSiteForm.dtml``. There's a Languages
 box which contains a list of two element tuples. Add a new tuple
 for your language. The first element will be the i18n label and
@@ -103,10 +103,41 @@ avoid most common mistakes.
 How to have CPS reread the translation files
 --------------------------------------------
 
-* For CPS >= 3.4.0. XXX: update!
+For CPS 3.4 and subsequent versions
++++++++++++++++++++++++++++++++++++
 
-* For CPS < 3.4.0. : Go to the ZMI and select the
-  `i18n Updater`. Then select the `Test` tab.
+Updating the translations from the translation files can be done through the
+`portal_setup` tool (located at the root of your CPS instance in the `ZMI`) by
+importing the needed steps from the `Import` tab.
+
+If the translations you are doing only affect the CPSDefault, CPSSchemas,
+CPSDocument, CPSDirectory, CPSNavigation, CPSPortlets, and CPSSkins products,
+then you need to import the `Localizer` step from the `CPS Default Site`
+profile::
+
+  portal_setup -> Import -> Select Localizer -> Select CPS Default Site -> Import selected steps
+
+If the translations you are doing also affect other products you will need, just
+the same, to select the profile for each of these products and import their
+`Localizer` step.
+
+Alternatively one can also use the old way (read the next section) but it may
+not be working anymore anytime.
+
+For CPS prior to CPS 3.4
+++++++++++++++++++++++++
+
+Updating the translations from the translation files can be done through an
+external method.  Go to the `ZMI` and select the `i18n Updater` (located at the
+root of the CPS instance). Then select the `Test` tab.
+
+If this external method does not exist you may try to create it with the
+following parameters::
+
+  Id: i18n Updater
+  Title: i18n Updater
+  Module Name: CPSDefault.cpsinstall
+  Function Name: cps_i18n_update
 
 
 How to contribute your translation or translation updates
