@@ -101,6 +101,16 @@ dedicated tools and should not handle it by hand so you will
 avoid most common mistakes.
 
 
+How to contribute your translation or translation updates
+=========================================================
+
+Open up a ticket in trac https://svn.nuxeo.org/trac/pub/newticket
+with "i18n" as keyword and your translations bundled in a TAR GZ or ZIP
+archive as a file attachment.
+
+You can use the account tracguest/tracguest if you haven't an account already.
+
+
 Software
 ========
 
