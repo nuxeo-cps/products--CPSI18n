@@ -18,8 +18,8 @@ Each CPS product has an i18n directory containing all pot/po files
 plus some others. All of them should be translated.
 
 
-Definition
-==========
+Definitions
+===========
 
 PO file (.po file): PO stands for "Portable Object". PO files
 contain sets of strings which associate each translatable string

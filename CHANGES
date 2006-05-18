@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Added the needed doc to make the `make_pot` and `update_pos` scripts work.
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - Updated the doc with authors' names.
