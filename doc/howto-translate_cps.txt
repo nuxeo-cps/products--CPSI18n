@@ -82,7 +82,9 @@ Languages paragraph and the msgid will be like
 ``label_language_en_US``.
 
 Then add your language to the language vocabulary defined in
-``CPSDocument/skins/cps_document/getDocumentVocabularies.py``.
+``CPSDocument/skins/cps_document/getDocumentVocabularies.py`` if
+you use CPS < 3.4.  For CPS >= 3.4, do the same in
+''CPSDefault/profiles/default/vocabularies/language_voc.xml''.
 There are three keys to add: the first one is the i18n label, the
 same that you used to name your po file; the second one is how you
 name your language in your own language -- note how some strings
@@ -91,7 +93,8 @@ CPSDefault's custom.pot file, it will be used when the vocabulary
 gets translated.
 
 If you use CPS < 3.4, you will also need to modify the file
-``CPSDefault/zmi/manage_addCPSSiteForm.dtml``. There's a Languages
+``CPSDefault/zmi/manage_addCPSSiteForm.dtml``. If you use CPS >= 3.4,
+then do the same in ``CPSDefault/factory.py``.  There's a Languages
 box which contains a list of two element tuples. Add a new tuple
 for your language. The first element will be the i18n label and
 the second your language name in English.
@@ -108,7 +111,9 @@ For CPS 3.4 and subsequent versions
 
 Updating the translations from the translation files can be done through the
 `portal_setup` tool (located at the root of your CPS instance in the `ZMI`) by
-importing the needed steps from the `Import` tab.
+importing the needed steps from the `Import` tab, but before that you need to add
+your language code to the `available_languages` property of your CPS site 
+(`Property` tab of your CPS instance in the `ZMI`).
 
 If the translations you are doing only affect the CPSDefault, CPSSchemas,
 CPSDocument, CPSDirectory, CPSNavigation, CPSPortlets, and CPSSkins products,
