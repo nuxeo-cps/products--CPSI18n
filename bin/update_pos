@@ -67,7 +67,7 @@ checkPoFile() {
     # We are interested in the conversion here, we are just interested by the
     # possible error messages and the return status of the command.
     # 0 => the file is correct, otherwise there are errors.
-    msgconv $po_file >> /dev/null
+    msgconv -t UTF-8 $po_file >> /dev/null
     if [ $? -ne 0 ] ; then
         $ECHO "##############################################"
         $ECHO "The file $po_file has problems!"
