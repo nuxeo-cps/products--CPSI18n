@@ -3,13 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Added support for Catalan.
+-
 Bug fixes:
 ~~~~~~~~~~
-- Added the needed doc to make the `make_pot` and `update_pos` scripts work.
-- Fixed #1698: Missing instructions in howto-translate_cps.txt, when using
-  CPS >= 3.4 (Patch kindly provided by Santi Camps).
-- Made update_pos work on Mac too.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- Updated the doc with authors' names.
+-
