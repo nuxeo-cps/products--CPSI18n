@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import sys, os, getopt
+
+optlist, args = getopt.getopt(sys.argv[1:], ())
+if args:
+    path = args[0]
+else:
+    path = '.'
+    
+for dirpath, dirnames, filenames in os.walk(path):
+    for filename in filenames:
+        name, ext = os.path.splitext(filename)
+        if ext == '.po':
+            filepath = os.path.join(dirpath, filename)
+            resultpath = os.path.join(dirpath, name+'.mo')
+            cmd = 'msgfmt -o %s %s' % (resultpath, filepath)
+            print cmd
+            os.popen(cmd)
