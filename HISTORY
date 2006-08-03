@@ -1,4 +1,20 @@
 *******************************************
+** CPSI18n V0.3.0 [R1 build 2006/08/03-09:41 by fermigier]
+** SVN URL: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk Revision: 47871
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Added script to compile all th po file when using Zope3/Five i18n support.
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSI18n V0.2.4 [R1 build 2006/07/31-12:10 by fermigier]
 ** SVN URL: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk Revision: 47588
 Requires:
