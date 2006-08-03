@@ -3,7 +3,7 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Added script to compile all th po file when using Zope3/Five i18n support.
 Bug fixes:
 ~~~~~~~~~~
 -
