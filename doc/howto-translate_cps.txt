@@ -145,6 +145,28 @@ following parameters::
   Function Name: cps_i18n_update
 
 
+Zope 3 non persistent i18n system
++++++++++++++++++++++++++++++++++
+
+Some CPS producst use the new Zope 3 non persistent i18n system. That is the
+case of the CPSSharedCalendar product.
+
+For products using the Zope 3 non persistent i18n system, messages are located
+in ``Products/PRODUCT_NAME/locales/``. After editing the `po` files you should
+compile them as follows ::
+
+  $ msgfmt -o file.mo file.po
+
+Thus for CPSSharedCalendar, edit the files in
+``Products/CPSSharedCalendar/locales`` and then after editing the `po` files
+compile them as follows ::
+
+  $ msgfmt -o cpscalendar.mo cpscalendar.po
+
+Then you have to restart Zope to see your modifications applied. There is no
+need to rerun the profiles.
+
+
 How to contribute your translation or translation updates
 =========================================================
 

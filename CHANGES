@@ -3,7 +3,8 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Added doc about translating products, such as CPSSharedCalendar, using the
+  Zope3 non persistent i18n system.
 Bug fixes:
 ~~~~~~~~~~
 -
