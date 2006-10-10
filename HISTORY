@@ -1,3 +1,24 @@
+===========================================================
+Package: CPSI18n 0.4.0
+===========================================================
+First release built by: ogrisel at: 2006-10-10T11:44:27
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/0.4.0
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@49442
+
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Added doc about translating products, such as CPSSharedCalendar, using the
+  Zope3 non persistent i18n system.
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
 *******************************************
 ** CPSI18n V0.3.0 [R1 build 2006/08/03-09:41 by fermigier]
 ** SVN URL: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk Revision: 47871
