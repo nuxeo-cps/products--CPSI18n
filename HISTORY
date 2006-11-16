@@ -1,4 +1,24 @@
 ===========================================================
+Package: CPSI18n 0.4.1
+===========================================================
+First release built by: gracinet at: 2006-11-16T18:19:58
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/0.4.1
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@50008
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+-
+Bug fixes
+~~~~~~~~~
+- [packaging] bundleman svn property
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 0.4.0
 ===========================================================
 First release built by: ogrisel at: 2006-10-10T11:44:27
