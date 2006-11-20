@@ -185,13 +185,14 @@ class TestPoFile(unittest.TestCase):
         po = self.po_filename
 
         po_name = po
-        file = open(os.path.join(getI18nDirPath(self.product_name), po), 'r')
+        file_path = os.path.join(getI18nDirPath(self.product_name), po_name)
+        file = open(file_path, 'r')
         file_content = file.read()
         file.seek(0)
         try:
             lines = file.readlines()
         except IOError, msg:
-            self.fail("Can't read po file %s:\n%s" % (po_name, msg))
+            self.fail("Can't read po file %s:\n%s" % (file_path, msg))
         file.close()
 
         # Checking that the .po file has a non-fuzzy header entry, so that it
@@ -203,35 +204,35 @@ class TestPoFile(unittest.TestCase):
         if len(match_fuzzy) != 0:
             assert 0, "Fuzzy header entry found in file %s! " \
                    "Remove the fuzzy flag on this entry.\n" \
-                   % po_name
+                   % file_path
 
         # XXX: Switch back to != 1 when the CHARSET_REGEXP is made more specific
         #if len(match_charset) != 1:
         if len(match_charset) < 1:
             assert 0, "Invalid charset found in file %s!\n the correct " \
                "line is : 'Content-Type: text/plain; charset=ISO-8859-15'\n" \
-               % po_name
+               % file_path
 
         try:
             mo = Msgfmt(lines)
         except PoSyntaxError, msg:
             self.fail('PoSyntaxError: Invalid po data syntax in file %s:\n%s' \
-                      % (po_name, msg))
+                      % (file_path, msg))
         except SyntaxError, msg:
             self.fail('SyntaxError: Invalid po data syntax in file %s \
                       (Can\'t parse file with eval():\n%s' % (po_name, msg))
         except Exception, msg:
             self.fail('Unknown error while parsing the po file %s:\n%s' \
-                      % (po_name, msg))
+                      % (file_path, msg))
 
         try:
             tro = GNUTranslations(mo.getAsFile())
             #print "tro = %s" % tro
         except UnicodeDecodeError, msg:
-            self.fail('UnicodeDecodeError in file %s:\n%s' % (po_name, msg))
+            self.fail('UnicodeDecodeError in file %s:\n%s' % (file_path, msg))
         except PoSyntaxError, msg:
             self.fail('PoSyntaxError: Invalid po data syntax in file %s:\n%s' \
-                      % (po_name, msg))
+                      % (file_path, msg))
 
         domain = tro._info.get('domain', None)
         #print "domain = %s" % domain
@@ -239,7 +240,7 @@ class TestPoFile(unittest.TestCase):
                         "In its header entry, the file \"%s\" should "
                         "have a line stating \"Domain: xxx\".\n"
                         "Usually in CPS we use \"Domain: default\".\n"
-                        % po_name)
+                        % file_path)
 
         language_new = tro._info.get('language-code', None) # new way
         #print "language_new = %s" % language_new
@@ -250,9 +251,9 @@ class TestPoFile(unittest.TestCase):
         self.failIf(language_old,
                     "The file %s has the old style language flag "
                     "set to %s. Please remove it!"
-                    % (po_name, language_old))
+                    % (file_path, language_old))
 
-        self.failUnless(language, 'Po file %s has no language!' % po)
+        self.failUnless(language, 'Po file %s has no language!' % file_path)
 
         file_lang = getLanguageCodeFromPoFileName(po)
         #print "getLanguageCodeFromPoFileName = %s" % file_lang
@@ -265,7 +266,7 @@ class TestPoFile(unittest.TestCase):
                           "In its header entry, the file \"%s\" should "
                           "have a line stating \"Language-Code: %s\" "
                           "instead of \"Language-Code: %s\".\n"
-                          % (po_name, po_name, file_lang, language))
+                          % (file_path, file_path, file_lang, language))
 
         language_name = tro._info.get('language-name', None)
         # Disabling this test at the moment.
@@ -285,8 +286,8 @@ class TestPoFile(unittest.TestCase):
                           ]:
             # TODO: Get rid of this "grep"!
             import commands
-            cmd = """grep '%s' %s/%s""" % (
-                meta_info, getI18nDirPath(self.product_name), po_name)
+            cmd = """grep '%s' %s""" % (
+                meta_info, file_path)
             #print "cmd = %s" % cmd
             statusoutput = commands.getstatusoutput(cmd)
             #print "status = %s" % statusoutput[0]
@@ -297,14 +298,15 @@ class TestPoFile(unittest.TestCase):
                          "In its header entry, the file \"%s\" should "
                          "have the metainfo spelled like %sxxx\".\n"
                          "Check that you are using mixed case spelling!\n%s"
-                         % (po_name, meta_info, po_name, meta_info,
+                         % (file_path, meta_info, file_path, meta_info,
                             statusoutput[1]))
 
 
     def testNoDuplicateMsgId(self):
         """Check that there are no duplicate msgids in the po files"""
         po = self.po_filename
-        file = open(os.path.join(getI18nDirPath(self.product_name), po), 'r')
+        file_path = os.path.join(getI18nDirPath(self.product_name), po)
+        file = open(file_path, 'r')
         file_content = file.read()
         file.close()
 
@@ -315,7 +317,7 @@ class TestPoFile(unittest.TestCase):
             msgid = match.group(0)
             if msgid in msgids:
                 assert 0, "Duplicate msgids were found in file \"%s\":\n\n%s" \
-                       % (po, msgid)
+                       % (file_path, msgid)
             else:
                 msgids.append(msgid)
 
