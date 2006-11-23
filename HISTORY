@@ -1,4 +1,24 @@
 ===========================================================
+Package: CPSI18n 0.4.2
+===========================================================
+First release built by: gracinet at: 2006-11-23T21:02:37
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/0.4.2
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@50246
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+-
+Bug fixes
+~~~~~~~~~
+- Better error messages with full file path.
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 0.4.1
 ===========================================================
 First release built by: gracinet at: 2006-11-16T18:19:58
