@@ -6,7 +6,8 @@ New features
 -
 Bug fixes
 ~~~~~~~~~
--
+- Made update_pos work without the need to have the totally useless .config.pot
+  configuration file.
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
 - 

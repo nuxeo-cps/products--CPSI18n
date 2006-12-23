@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2003-2005 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2003-2006 Nuxeo SAS <http://nuxeo.com>
 # Authors:
 # M.-A. Darche <madarche@nuxeo.com>
 # Julien Anguenot <ja@nuxeo.com>
@@ -78,11 +78,14 @@ checkPoFile() {
     fi
 }
 
-# Take the .config.pot from the make_pot
-# to get the name of the pot file choosen by
-# the user.
 getPotName() {
-    POT_FILE_NAME=`$GREP pot ./.config.pot`
+    # Taking the .config.pot from make_pot to get the name of the pot file
+    # choosen by the user is totally useless, a temp file does the job
+    # perfectly.
+    # POT_FILE_NAME=`$GREP pot ./.config.pot`
+    # The temp file is of the form /tmp/update_pos-john
+    POT_FILE_NAME=/tmp/$prog_name-$(id -nu)
+    touch $POT_FILE_NAME
 }
 
 # This optional file may be used to eliminate duplicate translations with
@@ -110,7 +113,7 @@ fi
 if [ -x $ZHOME/$Z_NAME/bin/python ]; then
     PYTHON_BIN=$ZHOME/$Z_NAME/bin/python
 else
-    PYTHON_BIN=`which python`
+    PYTHON_BIN=$(which python)
 fi
 
 # PRODUCTS_DIR is the only necessary variable that this script needs to get
@@ -161,7 +164,6 @@ fi
 # Getting the file name to use from the product's configuration
 # file. This file name is $POT_FILE_NAME
 getPotName
-chmod a+w $POT_FILE_NAME
 $PYTHON_BIN $PARSER_SCRIPT \
 --output $POT_FILE_NAME --output-encoding='ISO-8859-15' $ZPT_PATH
 
@@ -201,7 +203,6 @@ if [[ -r custom.pot ]]; then
     msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
 fi
 
-chmod a-w $POT_FILE_NAME
 
 # Merging the po files with the new pot template
 if [[ -n $verbose ]]; then
