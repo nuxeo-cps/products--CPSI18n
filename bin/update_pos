@@ -222,14 +222,16 @@ ls *.po | while read po_file ; do
         msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
     fi
     # Replacing possible fuzzy translations from final .po file with
-    # translations from the reference translations (which are en and
-    # fr translations at the moment) so that we only end up with
+    # translations from the reference translations so that we only end up with
     # meaningfull translations.
     case $po_file in
-        fr.po | mg.po | it.po) po_reference_file=fr.po;;
-        eu.po | ca.po) po_reference_file=es.po;;
-        *) po_reference_file=en.po;;
+        *fr.po | *mg.po | *it.po) po_reference_file=${po_file/[[:alpha:]][[:alpha:]]/fr.po};;
+        *eu.po | *ca.po) po_reference_file=${po_file/[[:alpha:]][[:alpha:]]/es.po};;
+        *) po_reference_file=${po_file/[[:alpha:]][[:alpha:]]/en.po};;
     esac
+    if [[ -n $verbose ]]; then
+        $ECHO "For $po_file po_reference_file is $po_reference_file"
+    fi
     if [[ -r $po_reference_file ]] \
        && [ $po_file != $po_reference_file ]; then
         if [[ -n $verbose ]]; then
@@ -256,6 +258,7 @@ ls *.po | while read po_file ; do
             # doing this. This step is not mandatory, but it is better that way.
             msgattrib --only-file=$purged_po --clear-fuzzy -o $po_file $po_file
             # Removing the temporary files
+            #$RM -f $fuzzy_po $purged_po $with_reference_trans_po $POT_FILE_NAME
             $RM -f $fuzzy_po $purged_po $with_reference_trans_po
         fi
     fi
