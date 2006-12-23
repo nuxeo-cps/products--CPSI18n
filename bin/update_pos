@@ -85,6 +85,7 @@ getPotName() {
     # POT_FILE_NAME=`$GREP pot ./.config.pot`
     # The temp file is of the form /tmp/update_pos-john
     POT_FILE_NAME=/tmp/$prog_name-$(id -nu)
+    rm -f $POT_FILE_NAME
     touch $POT_FILE_NAME
 }
 
