@@ -6,10 +6,7 @@ New features
 -
 Bug fixes
 ~~~~~~~~~
-- Made update_pos work without the need to have the totally useless .config.pot
-  configuration file.
-- Made update_pos work with CPSSkins PO files which are of the form *-xx.po
-  instead of just xx.po.
+-
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
 - 
