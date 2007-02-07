@@ -6,7 +6,7 @@ New features
 -
 Bug fixes
 ~~~~~~~~~
--
+- Moved internationalization (i18n) doc from CPSDefault to CPSI18n.
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
 - 
