@@ -5,13 +5,14 @@ How To For l10n-fr
 :Revision: $Id$
 
 
-noms d'actions ou de titres de pages:
+Noms d'actions ou de titres de pages:
 
 - Modifier/Modification et pas Editer/Edition
 
 - Supprimer et pas Effacer
 
-actions de formulaire (les boutons):
+
+Actions de formulaire (les boutons):
 
 - (button_change) Enregistrer et pas Sauver/Modifier/Changer/Valider
 
@@ -26,6 +27,13 @@ actions de formulaire (les boutons):
 
 autres:
 
-- mél et pas email/couriel/mail/iméle
-
 - méta-données et pas meta données
+
+- courriel et pas couriel/email/mél/mail/iméle
+  cf. http://www.culture.gouv.fr/culture/dglf/cogeter/20-06-03-courriel.htm
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
+.. vim: set filetype=rst:
