@@ -6,8 +6,7 @@ New features
 -
 Bug fixes
 ~~~~~~~~~
-- Fixed update_pos fuzzy translations since it was broken by a regression.
-- Made update_pos work on CPSSkins.
+-
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
 - 

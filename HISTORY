@@ -1,4 +1,25 @@
 ===========================================================
+Package: CPSI18n 0.4.5
+===========================================================
+First release built by: div at: 2007-04-20T11:58:59
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/0.4.5
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@51588
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+-
+Bug fixes
+~~~~~~~~~
+- Fixed update_pos fuzzy translations since it was broken by a regression.
+- Made update_pos work on CPSSkins.
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 0.4.4
 ===========================================================
 First release built by: gracinet at: 2007-02-08T14:46:49
