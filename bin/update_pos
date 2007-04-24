@@ -75,12 +75,10 @@ checkPoFile() {
     fi
 }
 
-getPotName() {
-    # The temp file is of the form /tmp/update_pos-john
-    POT_FILE_NAME=/tmp/$prog_name-$(id -nu)
-    rm -f $POT_FILE_NAME
-    touch $POT_FILE_NAME
-}
+# This file holds all the translations available for the current product.
+# This file is also useful for other products that will use it to exclude
+# translations from their own.
+POT_FILE_NAME='all.pot'
 
 # This optional file may be used to eliminate duplicate translations with
 # CPSDefault or other products such as CPSSchemas, etc. when a product overide
@@ -148,7 +146,6 @@ fi
 # Generating the .pot file from the ZPTs.
 # Getting the file name to use from the product's configuration
 # file. This file name is $POT_FILE_NAME
-getPotName
 $PYTHON_BIN $PARSER_SCRIPT \
 --output $POT_FILE_NAME --output-encoding='ISO-8859-15' $ZPT_PATH
 
@@ -208,7 +205,7 @@ find . -type f -name "*.po" -not -name "*plone*" -printf "%f\n" | while read po_
     else
         msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
     fi
-    
+
     # Replacing possible fuzzy translations from final .po file with
     # translations from the reference translations so that we only end up with
     # meaningfull translations.
