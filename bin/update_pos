@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2003-2006 Nuxeo SAS <http://nuxeo.com>
+# Copyright (c) 2003-2007 Nuxeo SAS <http://nuxeo.com>
 # Authors:
 # M.-A. Darche <madarche@nuxeo.com>
 # Julien Anguenot <ja@nuxeo.com>
@@ -78,7 +78,7 @@ checkPoFile() {
 # This file holds all the translations available for the current product.
 # This file is also useful for other products that will use it to exclude
 # translations from their own.
-POT_FILE_NAME='all.pot'
+ALL_MSGIDS_POT_FILE_NAME='all.pot'
 
 # This optional file may be used to eliminate duplicate translations with
 # CPSDefault or other products such as CPSSchemas, etc. when a product overide
@@ -143,14 +143,12 @@ if [[ -n $verbose ]]; then
   $ECHO
 fi
 
-# Generating the .pot file from the ZPTs.
-# Getting the file name to use from the product's configuration
-# file. This file name is $POT_FILE_NAME
+# Generating the .pot file from the parsing of the content of the ZPTs
 $PYTHON_BIN $PARSER_SCRIPT \
---output $POT_FILE_NAME --output-encoding='ISO-8859-15' $ZPT_PATH
+--output $ALL_MSGIDS_POT_FILE_NAME --output-encoding='ISO-8859-15' $ZPT_PATH
 
-# Checking the ZPT's po file well-formedness
-checkPoFile $POT_FILE_NAME
+# Checking the ZPTs's .pot file well-formedness. Normally this is useless
+checkPoFile $ALL_MSGIDS_POT_FILE_NAME
 
 # Reading each line of the file with name
 # BLACKLIST_POT_FILE_NAME to find all the files which we want
@@ -159,7 +157,7 @@ checkPoFile $POT_FILE_NAME
 # The BLACKLIST_POT_FILE_NAME is an optional file, so we must
 # test that the file exists and is readable before trying to use it.
 if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
-  PURGED_POT_FILE_NAME="$POT_FILE_NAME.purged"
+  PURGED_POT_FILE_NAME="$ALL_MSGIDS_POT_FILE_NAME.purged"
   while read line; do
     EXISTING_POT_FILE_NAME=$line
     if [[ -n $EXISTING_POT_FILE_NAME ]]; then
@@ -170,19 +168,19 @@ if [[ -r $BLACKLIST_POT_FILE_NAME ]]; then
             $ECHO
         fi
         msgattrib --only-file=$EXISTING_POT_FILE_NAME \
-        --set-obsolete --no-obsolete -o $PURGED_POT_FILE_NAME $POT_FILE_NAME
+        --set-obsolete --no-obsolete -o $PURGED_POT_FILE_NAME $ALL_MSGIDS_POT_FILE_NAME
         if [[ -r $PURGED_POT_FILE_NAME ]]; then
-            mv $PURGED_POT_FILE_NAME $POT_FILE_NAME
+            mv $PURGED_POT_FILE_NAME $ALL_MSGIDS_POT_FILE_NAME
         fi
     fi
   done < $BLACKLIST_POT_FILE_NAME
 fi
 
 if [[ -r custom.pot ]]; then
-    # Checking the user custom.pot file well-formedness
+    # Checking the product's custom.pot file well-formedness
     checkPoFile custom.pot
     # Concatenate the custom pot file and the pot file coming from the ZPTs
-    msgcat --use-first $POT_FILE_NAME custom.pot -o $POT_FILE_NAME
+    msgcat --use-first $ALL_MSGIDS_POT_FILE_NAME custom.pot -o $ALL_MSGIDS_POT_FILE_NAME
 fi
 
 
@@ -200,10 +198,10 @@ find . -type f -name "*.po" -not -name "*plone*" -printf "%f\n" | while read po_
     # it for example by inserting duplicate translations.
     checkPoFile $po_file
     if [[ -n $verbose ]]; then
-        $ECHO "Merging $po_file with $POT_FILE_NAME"
-        msgmerge $po_file $POT_FILE_NAME -o $po_file
+        $ECHO "Merging $po_file with $ALL_MSGIDS_POT_FILE_NAME"
+        msgmerge $po_file $ALL_MSGIDS_POT_FILE_NAME -o $po_file
     else
-        msgmerge $po_file $POT_FILE_NAME -o $po_file 2>/dev/null
+        msgmerge $po_file $ALL_MSGIDS_POT_FILE_NAME -o $po_file 2>/dev/null
     fi
 
     # Replacing possible fuzzy translations from final .po file with
@@ -246,7 +244,7 @@ find . -type f -name "*.po" -not -name "*plone*" -printf "%f\n" | while read po_
             # doing this. This step is not mandatory, but it is better that way.
             msgattrib --only-file=$purged_po --clear-fuzzy -o $po_file $po_file
             # Removing the temporary files
-            #$RM -f $fuzzy_po $purged_po $with_reference_trans_po $POT_FILE_NAME
+            #$RM -f $fuzzy_po $purged_po $with_reference_trans_po $ALL_MSGIDS_POT_FILE_NAME
             $RM -f $fuzzy_po $purged_po $with_reference_trans_po
         fi
     fi
