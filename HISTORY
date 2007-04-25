@@ -1,4 +1,24 @@
 ===========================================================
+Package: CPSI18n 1.0.0
+===========================================================
+First release built by: madarche at: 2007-04-25T11:55:00
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/1.0.0
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@51641
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+- This product is eligible for a 1.0.0 version.
+Bug fixes
+~~~~~~~~~
+- Made update_pos code clearer.
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 0.4.5
 ===========================================================
 First release built by: div at: 2007-04-20T11:58:59
