@@ -72,6 +72,10 @@ Files
 Adding a new translation to CPS
 ===============================
 
+Use the `Codes for the Representation of Names of Languages`
+http://www.loc.gov/standards/iso639-2/php/code_list.php
+to determine which language code to use for naming your files.
+
 To start your translation, make a copy of the master pot file.
 (This copy must be named according to i18n rules: en.po or
 en_US.po and not EN.po, en_us.po or en-US.po. Case and underscore
