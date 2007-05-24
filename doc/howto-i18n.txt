@@ -1,0 +1,350 @@
+============
+CPS and i18n
+============
+
+:Author: Stefane Fermigier
+
+:Revision: $Id$
+
+:abstract: This documents gives rules and hints for translating
+    CPS 3 and third-party products.
+
+.. sectnum::    :depth: 4
+.. contents::   :depth: 4
+
+
+Tools Used
+==========
+
+We use a combination of
+"TranslationService":http://www.zope.org/Members/efge/TranslationService
+and "Localizer":http://www.j-david.net/software/localizer.
+These products are shipped with CPS.
+
+The CPSI18n product provides you with two tools : ``make_pot`` and
+``update_pos`` to help with managing the pot/po files. (See the
+related section below.)
+
+Messages are stored in a MessageCatalog object inside the
+Localizer instance.  Hence, the translation_service object holds
+paths to MessageCatalog objects like "Localizer/default".
+
+We use only the `Default` domain for CPSDefault and all the
+required products, this means that we will have only one
+MessageCatalog.
+
+CPSDefault skins does not provide a 'i18n:domain' attribute or at
+least the "default".
+
+For the python script file we have to use this syntax::
+
+    cpsmcat = context.translation_service
+
+You have to use kbabel with the following configuration:
+
+- Settings/Save/General/Encoding
+
+- ISO-8859-15
+
+- Do not check Keep the encoding of the file.
+
+You may need to launch kbabel like this::
+
+      LC_ALL=fr_FR@euro kbabel&
+
+Please see if there is any howto-l10n-xx.txt to guide you in the
+xx translation.
+
+
+Guide to Prefixes Your msgid (mostly from plone i18n guideline)
+===============================================================
+
+msgid is a short name like the one you would use for a variable.
+
+We added certain standard prefixes for IDs so you can understand
+where they are used (semantic differences are easier to spot this
+way), and easily locate them.  When sorted, the IDs will be grouped by
+type automatically.  Here are the standard prefixes:
+
+- ``button_``  - for action buttons
+
+- ``heading_`` - for page headings
+
+- ``description_`` - for the description directly below the headings
+
+- ``legend_`` - for the group/fieldset legends
+
+- ``label_`` - for labels, both field labels and input labels
+
+- ``help_`` - the pop-up help text
+
+- ``link_`` - a href link
+
+- ``box_`` - for content in Plone Boxes (navigation box etc)
+
+- ``listingheader_`` - for headers in listings (tables of class
+  "listing", the normal way to list items in Plone)
+
+- ``time_`` - for time-related stuff that can be reused - "Yesterday",
+  "Last week" etc
+
+- ``batch_`` - for batch-related things - like "Displaying X to Y of Z
+  total documents"
+
+- ``portal_type_`` - for portal type name
+
+- ``action_`` - for action name
+
+- ``psm_`` - for portal status message
+
+- ``br_`` - for breadcrumbs you may set from scratch
+
+
+There are also Product-specific prefixes, e.g. the Product ZWiki
+has a heading, then the prefix would be
+``|zwiki_heading_edit_wiki_page|``. This prevents collision between
+Message IDs.
+
+
+How to Translate
+================
+
+- ZPT static sentences:
+
+  Use msgid! ::
+
+      <p i18n:translate="help_join">Becoming a member gives [...]</p>
+
+  Be sure to be specific, it would have been a mess to use
+  "help_message" in the former example.
+
+- ZPT dynamic sentences:
+
+  Msgids are not always convenient. For sentences like::
+
+    <h2 i18n:translate="">
+      heading_reject_publication_of
+      <span tal:replace="here/title_or_id" i18n:name="item_id">Item</span>
+    </h2>
+
+  Here the msgid to translate is
+  ``heading_accept_publication_of ${item_id}``.
+
+  For dynamic keywork like::
+
+    <span tal:omit-tag="" tal:content="items/action" i18n:translate="">
+          Action
+    </span>
+
+  Notice: It won't be neccesarly to translate this msgid in the po
+  files since the content will be replaced by the dynamically
+  calculated value.
+
+- ZPT tags attributes:
+
+  On form tags, use a ``value`` attribute to set the msgid::
+
+    <input type="submit" i18n:attributes="value" value="button_search" />
+
+
+- Javascript i18n:
+
+  There is a tal define in the main_template named cpsmcat::
+
+    cpsmcat nocall:here/Localizer/default;
+
+  Example::
+
+    <a href="http://www.nuxeo.com/"
+      tal:attributes="onclick python:'return window.confirm(\'%s\')' % (cpsmcat('description_confirm_jump'), )">go to nuxeo</a>
+
+- For the portal status message:
+
+  Typically, this sentence is sent as is by a redirect call. a
+  ``i18n:translate=""`` attribute is place in main_template so the
+  entire sentence is stored (no msgid).
+
+  As a consequence, do not use computed sentences like "5 items
+  deleted." or "please correct the following fields: [...]". Keep
+  it simple like psm_item_deleted or psm_error_found
+
+- For portal types:
+
+  Given the portal_type id, use ``'portal_type_%s_title' % id`` as the
+  title and ``'portal_type_%s_description" % id`` as the description.
+  For instance, the portal type ``newsdocument`` is given
+  ``portal_type_newsdocument_title`` as the title.
+
+  Don't bother for other products you try to integrate if they
+  have a title in plain english. We want msgids in CPSDefault at
+  least.
+
+- For portal types actions:
+
+  Actions should use msgid as well: typically named "action_view"
+  or "action_reply".
+
+- For dates:
+
+  [XXX how do we specify and where do we write the date format?]
+
+- CPS proxies:
+
+  Proxies handle translation by themselves so don't place
+  ``i18n:translate=""`` around the title.
+
+
+Rules to Generate pot/pos Files and Updating Them
+=================================================
+
+Included in the CPSI18n product you'll find 2 tools automatizing the msgids
+gathering and updating:
+
+1. ``make_pot``: Initialization (see the scenario below).
+
+2. ``update_pos``: If your ZPT's change or you want to add some
+   msgids.
+
+Check the doc of CPSI18n in order to make these tools work.
+
+The idea is to parse the ZPTs directly, extracting the content of
+the i18n tags and generating the pot/po files for a product.
+
+This process basically uses: GNU Gettext, OpenTAL, pax (XML
+parser). You'll need GNU Gettext version >= 0.11.4-7 installed on the computer
+where you will launch the scripts ``make_pot`` and ``update_pos``.
+
+Set ISO 8859-15 encoding in your po editor (Whatever the tool) !!
+The characters with accents will not be accepted at diplay page
+time if you don't. ;)
+
+``update_pos`` and ``make_pot`` can handle a blacklist pot file, removing
+all msgid that are present in then blacklist pot file, this is
+usefull when you share a mcat with another products and you don't
+want to duplicate existing translation.
+
+To use this feature you need to edit/create a file named
+``.blacklist_pot`` in i18n repository and set the content to the
+path of the pot file like '../../CPSDefault/i18n/cpsdefault.pot',
+by doing this the update_pos command will remove all msgid found
+in your template and custom that exist in the
+``../../CPSDefault/i18n/cpsdefault.pot`` file.
+
+
+Process Outline
+===============
+
+Before starting create a subdirectory i18n within your product
+directory.
+
+
+Main Branch (init)
+-------------------
+
+a1 ::
+
+     $ cd ./i18n
+
+b1
+    Use ``make_pot`` the first time when you wanna start the
+    internationalization of your product. You'll get all the necessarily
+    files. Simply::
+
+      $ make_pot
+
+c1
+    Translate the local files using Kbabel
+
+d1
+    Localizer feeds the po files
+
+
+Branch 1
+--------
+
+b2
+    You change your ZPTs
+
+c2 ::
+
+     $ update_pos
+
+d2
+    Translate the local files using Kbabel
+
+e2
+    Localizer feeds the po files
+
+
+Branch 2
+--------
+
+b3
+    You add some msgids in the custom.pot file.
+    (Typically for the dynamic content.)
+    You can check the localizer catalog after asking CPS to interpret
+    them. Just if you'd like to be sure to have all of them.
+    BUT DON'T USE Localizer FOR EXPORT ANYMORE !!
+
+c3
+    $update_pos
+
+d3
+    Translate the local files using Kbabel
+    do not change
+
+e3
+    Localizer feeds the po files
+
+Notes:
+
+- ``make_pot`` and ``update_pos`` will parse all your zpts in the
+  skins folder make sure that your zpts are working and that there
+  are no extra zpt before running those commands.
+
+- When using ``emacs`` or other po editor do not change msgid
+  orders or comments to make cvs diff usefull.
+
+
+DEBUG mode with make_pot
+-------------------------
+
+You might find useful the debug mode of make_pot if your ZPTs
+contained errors. It means if you didn't set the i18n tags
+properly.
+
+It will be use if you get some errors with make_pot.
+
+``make_pot`` can feed one directory or one single file::
+
+    make_pot <file|directory>
+
+It will check all the ZPTs within directory and will inform you
+which one are not well formed (By mean of i18n tags).
+
+
+Within CPS3
+===========
+
+- ONE domain and ONE MessageCatalog (default) for the CPSDefault
+  and the compulsory products following the guide for the
+  internationalization of CPS3. The compulsory products should use
+  .blacklist_pot file refering
+  ../../CPSDefault/i18n/cpsdefault.pot file to not duplicate
+  translation.
+
+- ONE domain and ONE MessageCatalog for the others products, note
+  that actions msgid should be define in the Default domain.
+
+- More generally: don't put anything in the default catalog until
+  you checked the msgids are according to the above nomenclature.
+
+- Waiting for some feedbacks about domains in our case ??? Don't
+  see really the usefulness.
+
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
+.. vim: set filetype=rst:

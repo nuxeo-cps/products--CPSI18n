@@ -69,8 +69,8 @@ Files
   text generated into scripts or templates...
 
 
-How to begin
-============
+Adding a new translation to CPS
+===============================
 
 To start your translation, make a copy of the master pot file.
 (This copy must be named according to i18n rules: en.po or

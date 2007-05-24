@@ -1,0 +1,39 @@
+==================
+How To For l10n-fr
+==================
+
+:Revision: $Id$
+
+
+Noms d'actions ou de titres de pages:
+
+- Modifier/Modification et pas Editer/Edition
+
+- Supprimer et pas Effacer
+
+
+Actions de formulaire (les boutons):
+
+- (button_change) Enregistrer et pas Sauver/Modifier/Changer/Valider
+
+- (button_apply)  Appliquer et pas Changer/Voir
+
+- (button_update) Mettre à jour pour une popup qui mets à jour un
+  champs et pas Enregistrer
+
+- button_change et pas button_edit
+
+- (button_delete) Supprimer et pas Effacer
+
+autres:
+
+- méta-données et pas meta données
+
+- courriel et pas couriel/email/mél/mail/iméle
+  cf. http://www.culture.gouv.fr/culture/dglf/cogeter/20-06-03-courriel.htm
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
+.. vim: set filetype=rst:
