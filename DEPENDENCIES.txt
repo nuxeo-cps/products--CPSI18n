@@ -1,5 +1,7 @@
 # $Id$
 
+gettext (for Debian: sudo aptitude install gettext)
+
 # Python --------------------
 #
 # pax and OpenTAL are needed for the i18n_xgettext.py script.
