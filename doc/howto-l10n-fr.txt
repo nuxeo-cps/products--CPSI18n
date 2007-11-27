@@ -27,7 +27,7 @@ Actions de formulaire (les boutons):
 
 autres:
 
-- méta-données et pas meta données
+- métadonnées et pas « meta données » ou méta-données »
 
 - courriel et pas couriel/email/mél/mail/iméle
   cf. http://www.culture.gouv.fr/culture/dglf/cogeter/20-06-03-courriel.htm
