@@ -31,13 +31,17 @@ OpenTAL_.
 
 So you need GNU Gettext version >= 0.11.4-7 installed on your computer.
 
-Get a copy of OpenTAL_ and pax from the `OpenTAL CVS repository`_ 
+Get a copy of OpenTAL_ and pax from the `OpenTAL CVS repository`_::
+
+  $ cvs -d:pserver:anonymous@cvs.sv.gnu.org:/sources/opental co opental
+
 The installation of OpenTAL and pax is to be done like this::
 
   $ cd pax
   $ python setup.py build
   $ python setup.py install
 
+  $ cd ..
   $ cd OpenTAL
   $ python setup.py build
   $ python setup.py install
