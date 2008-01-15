@@ -8,7 +8,11 @@ INSTALL
 .. sectnum::    :depth: 4
 .. contents::   :depth: 4
 
-Included in the CPSI18n product you'll find 2 tools automatizing the msgids
+
+Introduction
+============
+
+Included in this CPSI18n product you'll find 2 tools automatizing the msgids
 gathering and updating:
 
 1. `make_pot`: Initialization (see the scenario below).
@@ -16,18 +20,24 @@ gathering and updating:
 2. `update_pos`: If your ZPT's change or you want to add some
    msgids.
 
-Those tools use GNU Gettext, OpenTAL and pax (XML parser).
-You'll need GNU Gettext version >= 0.11.4-7 installed on the computer.
+Installation
+============
 
+.. _OpenTAL: http://savannah.nongnu.org/projects/opental/
+.. _OpenTAL CVS repository: http://cvs.savannah.nongnu.org/viewvc/opental/?root=opental
+
+The scripts in CPSI18n use GNU Gettext, OpenTAL_ and pax, an XML parser from
+OpenTAL_.
+
+So you need GNU Gettext version >= 0.11.4-7 installed on your computer.
+
+Get a copy of OpenTAL_ and pax from the `OpenTAL CVS repository`_ 
 The installation of OpenTAL and pax is to be done like this::
 
-  $ tar xvf /home/zopes/_packages/pax-1.0a3.tar
   $ cd pax
   $ python setup.py build
   $ python setup.py install
 
-  $ cd ..
-  $ tar xvf /home/zopes/_packages/OpenTAL-0.5.tar
   $ cd OpenTAL
   $ python setup.py build
   $ python setup.py install
@@ -35,10 +45,12 @@ The installation of OpenTAL and pax is to be done like this::
 
   $ rm -rf ./pax ./OpenTAL
 
+CPSI18n has been tested with pax 1.0a3 and OpenTAL 0.5.
 
 Troubleshooter
 --------------
-OpenTAL does not install ok using python2.4, but there's
+
+OpenTAL might not install ok using python2.4, but there's
 a workaround to make it work: just change the `evaluateText` method
 parameters (OpenTAL/Context.py, l.191 in version 0.5) from
 ``def evaluateText(self, expr, None=None):`` to
