@@ -1,4 +1,24 @@
 ===========================================================
+Package: CPSI18n 1.0.4
+===========================================================
+First release built by: madarche at: 2008-01-18T21:38:10
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/1.0.4
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@52476
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+-
+Bug fixes
+~~~~~~~~~
+- Added the CVS command to retrieve OpenTAL and pax.
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 1.0.3
 ===========================================================
 First release built by: madarche at: 2008-01-15T12:17:29
