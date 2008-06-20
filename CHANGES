@@ -6,7 +6,7 @@ New features
 -
 Bug fixes
 ~~~~~~~~~
--
+- Added a Makefile for generating HTML doc.
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
 - 
