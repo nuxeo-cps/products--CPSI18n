@@ -3,6 +3,8 @@ Requires
 -
 New features
 ~~~~~~~~~~~~
+- Made bin/fix_pos and tests/translations.py respectively produce and assert the
+  use of UTF-8 .po files.
 - Made bin/fix_pos handle the "Preferred-Encodings" metadata header.
 Bug fixes
 ~~~~~~~~~

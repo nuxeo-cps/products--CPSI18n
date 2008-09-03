@@ -30,6 +30,7 @@ LANGUAGE_NAMES = {'en': 'English',
                   'fr': 'French',
                   'it': 'Italian',
                   'es': 'Spanish',
+                  'gl': 'Galician',
                   'eu': 'Basque',
                   'ro': 'Romanian',
                   'de': 'German',
@@ -43,8 +44,8 @@ LANGUAGE_NAMES = {'en': 'English',
                   }
 
 DEFAULT_DOMAIN = 'default'
-#DEFAULT_CHARSET = 'UTF-8'
-DEFAULT_CHARSET = 'ISO-8859-15'
+DEFAULT_CHARSET = 'UTF-8'
+#DEFAULT_CHARSET = 'ISO-8859-15'
 
 
 def execArgs():
@@ -104,10 +105,10 @@ def fixPoFile(po_file_path, domain, charset):
     file = open(po_file_path, 'r')
     file_content = file.read()
     file.close()
-    file_content = fixContentType(charset, po_file_path, file_content)
     file_content = fixLanguageCode(language_code, po_file_path, file_content)
     file_content = fixLanguageName(language_code, po_file_path, file_content)
     file_content = fixDomain(domain, po_file_path, file_content)
+    file_content = fixContentType(charset, po_file_path, file_content)
     file_content = fixPreferredEncodings(file_content)
     file = open(po_file_path, 'w')
     file.write(file_content)
@@ -169,26 +170,6 @@ def fixLanguageName(language_code, po_file_path, file_content):
     return file_content
 
 
-CONTENT_TYPE_REGEXP = re.compile(
-    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
-    r'^"content-type: [\S ]+\\n"\n',
-    re.MULTILINE | re.IGNORECASE)
-
-def fixContentType(charset, po_file_path, file_content):
-    """Removes any Domain metadata and add a new one with a correct
-    value.
-    """
-    # First removing the considered header
-    match = CONTENT_TYPE_REGEXP.findall(file_content)
-    file_content = CONTENT_TYPE_REGEXP.sub(r'\g<1>', file_content)
-    # Then adding the considered header with a specific value
-    content_type_statement = r'"Content-Type: text/plain; charset=%s\\n"\n' \
-                             % charset
-    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % content_type_statement,
-                                           file_content)
-    return file_content
-
-
 DOMAIN_REGEXP = re.compile(
     r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
     r'^"domain: \w+\\n"\n',
@@ -215,6 +196,43 @@ def getLanguageCodeFromPoFileName(file_path):
     # Strip of the .po suffix
     language_code = file_name[:-3]
     return language_code
+
+
+CHARSET_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"content-type: text/plain; charset=(\S+)\\n"',
+    re.MULTILINE | re.IGNORECASE)
+
+CONTENT_TYPE_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"content-type: [\S ]+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
+
+def fixContentType(charset, po_file_path, file_content):
+    """Removes any Domain metadata and add a new one with a correct
+    value.
+    """
+    # Converting Latin9 files to UTF-8 because we want to normalize all files
+    # to # UTF-8.
+    search = CHARSET_REGEXP.search(file_content)
+    #log("search = %s" % search)
+    if search is not None:
+        charset_announced = search.group(3)
+        log("Announced charset for file %s = %s"
+            % (po_file_path, charset_announced))
+        if charset_announced == 'ISO-8859-15':
+            log("Converting file %s to UTF-8" % po_file_path)
+            file_content_unicode = unicode(file_content, 'ISO-8859-15')
+            file_content = file_content_unicode.encode('utf-8')
+
+    # First removing the considered header
+    file_content = CONTENT_TYPE_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
+    content_type_statement = r'"Content-Type: text/plain; charset=%s\\n"\n' \
+                             % charset
+    file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % content_type_statement,
+                                           file_content)
+    return file_content
 
 
 PREFERRED_ENCODINGS_REGEXP = re.compile(

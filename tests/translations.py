@@ -38,6 +38,7 @@ LANGUAGE_NAMES_AND_CODES = {'en': 'English',
                             'fr': 'French',
                             'it': 'Italian',
                             'es': 'Spanish',
+                            'gl': 'Galician',
                             'eu': 'Basque',
                             'ca': 'Catalan',
                             #'pt-br': 'Brazilian',
@@ -49,8 +50,8 @@ LANGUAGE_NAMES_AND_CODES = {'en': 'English',
                             'sv': 'Swedish',
                             }
 
-#DEFAULT_CHARSET = 'UTF-8'
-DEFAULT_CHARSET = 'ISO-8859-15'
+DEFAULT_CHARSET = 'UTF-8'
+#DEFAULT_CHARSET = 'ISO-8859-15'
 
 
 def canonizeLang(lang):
