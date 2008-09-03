@@ -220,7 +220,7 @@ def fixContentType(charset, po_file_path, file_content):
         charset_announced = search.group(3)
         log("Announced charset for file %s = %s"
             % (po_file_path, charset_announced))
-        if charset_announced == 'ISO-8859-15':
+        if charset_announced.lower() == 'iso-8859-15':
             log("Converting file %s to UTF-8" % po_file_path)
             file_content_unicode = unicode(file_content, 'ISO-8859-15')
             file_content = file_content_unicode.encode('utf-8')
