@@ -1,4 +1,4 @@
-# (C) Copyright 2005-2006 Nuxeo SAS <http://nuxeo.com>
+# (C) Copyright 2005-2008 Nuxeo SAS <http://nuxeo.com>
 # (C) Copyright 2005 Unilog <http://unilog.com>
 # Authors:
 # M.-A. Darche <madarche@nuxeo.com>
@@ -48,6 +48,10 @@ LANGUAGE_NAMES_AND_CODES = {'en': 'English',
                             'nl': 'Dutch',
                             'sv': 'Swedish',
                             }
+
+#DEFAULT_CHARSET = 'UTF-8'
+DEFAULT_CHARSET = 'ISO-8859-15'
+
 
 def canonizeLang(lang):
     """Return a canonized language name so that language names can easily be
@@ -164,16 +168,16 @@ FUZZY_HEADER_ENTRY_REGEXP = re.compile('#, fuzzy\nmsgid ""\nmsgstr ""',
 # matches only at the beginning of the string, and "$" only at the end of the
 # string and immediately before the newline (if any) at the end of the string.
 #
-# Check the charset:
+# Check the charset, for example:
 #
-# for example
-#
+# "Content-Type: text/plain; charset=UTF-8\n"
+# or
 # "Content-Type: text/plain; charset=ISO-8859-15\n"
 #
-# XXX: Make this regexp more specific: the Content-Type shall be present only
-# on the first meta entry.
-CHARSET_REGEXP = re.compile('^"Content-Type: text/plain; charset=ISO-8859-15',
-                            re.MULTILINE | re.IGNORECASE)
+CHARSET_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"Content-Type: text/plain; charset=%s' % DEFAULT_CHARSET,
+    re.MULTILINE | re.IGNORECASE)
 
 class TestPoFile(unittest.TestCase):
 
@@ -206,12 +210,10 @@ class TestPoFile(unittest.TestCase):
                    "Remove the fuzzy flag on this entry.\n" \
                    % file_path
 
-        # XXX: Switch back to != 1 when the CHARSET_REGEXP is made more specific
-        #if len(match_charset) != 1:
-        if len(match_charset) < 1:
+        if len(match_charset) != 1:
             assert 0, "Invalid charset found in file %s!\n the correct " \
-               "line is : 'Content-Type: text/plain; charset=ISO-8859-15'\n" \
-               % file_path
+               "line is : 'Content-Type: text/plain; charset=%s'\n" \
+               % (file_path, DEFAULT_CHARSET)
 
         try:
             mo = Msgfmt(lines)
