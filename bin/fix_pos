@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# (C) Copyright 2005 Nuxeo SARL <http://nuxeo.com>
+# (C) Copyright 2005-2008 Nuxeo SAS <http://nuxeo.com>
 # Authors:
 # M.-A. Darche <madarche@nuxeo.com>
 #
@@ -19,7 +19,8 @@
 # 02111-1307, USA.
 #
 # $Id$
-"""This program fixes .po files by modifying their header entry if needed.
+"""This program normalizes .po files (and .pot files too if needed)
+to the CPS conventions by modifying their header entry when needed.
 """
 
 import os, os.path, sys, string, re
@@ -42,6 +43,7 @@ LANGUAGE_NAMES = {'en': 'English',
                   }
 
 DEFAULT_DOMAIN = 'default'
+#DEFAULT_CHARSET = 'UTF-8'
 DEFAULT_CHARSET = 'ISO-8859-15'
 
 
@@ -55,6 +57,9 @@ $ %prog /var/lib/zope2.7/instance_1/Products/CPSDefault/es.po
 $ %prog /var/lib/zope2.7/instance_1/Products/CPSDefault/*.po
 $ find /var/lib/zope2.7/instance_1/Products -name "*.po" -print0 | xargs -0 %prog
 $ find . -name "*.po" -print0 | xargs -0 %prog
+$ %prog /var/lib/zope2.7/instance_1/Products/CPSDefault/*.po*
+$ find /var/lib/zope2.7/instance_1/Products -name "*.po*" -print0 | xargs -0 %prog
+$ find . -name "*.po*" -print0 | xargs -0 %prog
 """
     parser = OptionParser(usage=usage)
 
@@ -103,23 +108,38 @@ def fixPoFile(po_file_path, domain, charset):
     file_content = fixLanguageCode(language_code, po_file_path, file_content)
     file_content = fixLanguageName(language_code, po_file_path, file_content)
     file_content = fixDomain(domain, po_file_path, file_content)
+    file_content = fixPreferredEncodings(file_content)
     file = open(po_file_path, 'w')
     file.write(file_content)
     file.close()
 
 
+# Examples of the text matched:
+# msgid ""
+# msgstr ""
+# "some text here\n"
+# "some other text there\n"
 HEADER_ENTRY_REGEXP = re.compile(r'^msgid ""\nmsgstr ""\n(^".*\\n"\n)*',
                                  re.MULTILINE)
 
-LANGUAGE_CODE_REGEXP = re.compile(r'^"language-code: \w+\\n"',
-                                  re.MULTILINE | re.IGNORECASE)
+
+LANGUAGE_CODE_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"language-code: \w+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageCode(language_code, po_file_path, file_content):
     """Removes any Language-Code metadata and add a new one with a correct
     value.
     """
-    language_code_statement = r'"Language-Code: %s\\n"' % language_code
-    file_content = LANGUAGE_CODE_REGEXP.sub('', file_content)
+    # First removing the considered header
+    # The backreference "\g<1>" substitutes in the first group substring matched
+    # by the regexp.
+    file_content = LANGUAGE_CODE_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
+    language_code_statement = r'"Language-Code: %s\\n"\n' % language_code
+    # The backreference "\g<0>" substitutes in the entire substring matched
+    # by the regexp.
     file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s'
                                            % language_code_statement,
                                            file_content)
@@ -129,46 +149,59 @@ def fixLanguageCode(language_code, po_file_path, file_content):
 # Some language names such as "Portuguese Brazilian" may be defined by many
 # words, hence [\S ]+. Note that one cannot use [\w ]+ since translators may
 # have use accented characters for their language names.
-LANGUAGE_NAME_REGEXP = re.compile(r'^"language-name: [\S ]+\\n"',
-                                  re.MULTILINE | re.IGNORECASE)
+LANGUAGE_NAME_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"language-name: [\S ]+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
 
 def fixLanguageName(language_code, po_file_path, file_content):
     """Removes any Language-Name metadata and add a new one with a correct
     value.
     """
+    # First removing the considered header
+    file_content = LANGUAGE_NAME_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
     language_name = LANGUAGE_NAMES.get(language_code, language_code)
-    language_name_statement = r'"Language-Name: %s\\n"' % language_name
-    file_content = LANGUAGE_NAME_REGEXP.sub('', file_content)
+    language_name_statement = r'"Language-Name: %s\\n"\n' % language_name
     file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s'
                                            % language_name_statement,
                                            file_content)
     return file_content
 
 
-CONTENT_TYPE_REGEXP = re.compile(r'^"content-type: [\S ]+\\n"',
-                                 re.MULTILINE | re.IGNORECASE)
+CONTENT_TYPE_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"content-type: [\S ]+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
 
 def fixContentType(charset, po_file_path, file_content):
     """Removes any Domain metadata and add a new one with a correct
     value.
     """
-    content_type_statement = r'"Content-Type: text/plain; charset=%s\\n"' \
+    # First removing the considered header
+    match = CONTENT_TYPE_REGEXP.findall(file_content)
+    file_content = CONTENT_TYPE_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
+    content_type_statement = r'"Content-Type: text/plain; charset=%s\\n"\n' \
                              % charset
-    file_content = CONTENT_TYPE_REGEXP.sub('', file_content)
     file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % content_type_statement,
                                            file_content)
     return file_content
 
 
-DOMAIN_REGEXP = re.compile(r'^"domain: \w+\\n"',
-                           re.MULTILINE | re.IGNORECASE)
+DOMAIN_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"domain: \w+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
 
 def fixDomain(domain, po_file_path, file_content):
     """Removes any Domain metadata and add a new one with a correct
     value.
     """
-    domain_statement = r'"Domain: %s\\n"' % domain
-    file_content = DOMAIN_REGEXP.sub('', file_content)
+    # First removing the considered header
+    file_content = DOMAIN_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
+    domain_statement = r'"Domain: %s\\n"\n' % domain
     file_content = HEADER_ENTRY_REGEXP.sub(r'\g<0>%s' % domain_statement,
                                            file_content)
     return file_content
@@ -182,6 +215,23 @@ def getLanguageCodeFromPoFileName(file_path):
     # Strip of the .po suffix
     language_code = file_name[:-3]
     return language_code
+
+
+PREFERRED_ENCODINGS_REGEXP = re.compile(
+    r'^(msgid ""\n^msgstr ""\n(^".*\\n"\n)*)'
+    r'^"preferred-encodings: .+\\n"\n',
+    re.MULTILINE | re.IGNORECASE)
+
+def fixPreferredEncodings(file_content):
+    """Fix the Preferred-Encodings metadata.
+    """
+    # First removing the considered header
+    file_content = PREFERRED_ENCODINGS_REGEXP.sub(r'\g<1>', file_content)
+    # Then adding the considered header with a specific value
+    preferred_encodings_statement = r'"Preferred-Encodings: utf-8\\n"\n'
+    file_content = HEADER_ENTRY_REGEXP.sub(
+        r'\g<0>%s' % preferred_encodings_statement, file_content)
+    return file_content
 
 
 def log(message, force=False):

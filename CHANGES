@@ -3,9 +3,11 @@ Requires
 -
 New features
 ~~~~~~~~~~~~
--
+- Made bin/fix_pos handle the "Preferred-Encodings" metadata header.
 Bug fixes
 ~~~~~~~~~
+- Made bin/fix_pos really insert the metadata headers when and where it should
+  in all cases.
 - Added a Makefile for generating HTML doc.
 New internal features
 ~~~~~~~~~~~~~~~~~~~~~
