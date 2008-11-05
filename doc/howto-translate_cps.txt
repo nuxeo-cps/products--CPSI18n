@@ -245,15 +245,6 @@ against non-technical people, which are the common audience for
 CPS. This is necessary to make sure you don't use terms that are
 too technical or too abstract.
 
-For some odd reason, we cannot currently use UTF-8; so we have
-fallen back to ISO 8859-15 encoding (latin9). Since it will be the
-default encoding sent by CPS's main template, set it accordingly
-in your po editor. Diacritics signs (accents) or uncommon
-punctuation will be replaced by strange characters if you do not
-use the same encoding as ours... We know this sucks and we will
-use UTF-8 again as soon as possible. (TODO then add a note in the
-software section about the "recode" tool.)
-
 If you are in doubt about another translation you are using for
 inspiration, ask the mailing list so you can contact the upstream
 translator or people speaking that language.

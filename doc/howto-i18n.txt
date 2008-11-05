@@ -40,18 +40,6 @@ For the python script file we have to use this syntax::
 
     cpsmcat = context.translation_service
 
-You have to use kbabel with the following configuration:
-
-- Settings/Save/General/Encoding
-
-- ISO-8859-15
-
-- Do not check Keep the encoding of the file.
-
-You may need to launch kbabel like this::
-
-      LC_ALL=fr_FR@euro kbabel&
-
 Please see if there is any howto-l10n-xx.txt to guide you in the
 xx translation.
 
