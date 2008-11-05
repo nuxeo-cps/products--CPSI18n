@@ -11,6 +11,8 @@ TODO
 
 The I18n process of CPS should be made easier and faster.
 
+The files should mention the use of bin/i18nupdate.
+
 One should read I18n with Five
 http://worldcookery.com/files/fivei18n/
 
