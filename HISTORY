@@ -1,4 +1,30 @@
 ===========================================================
+Package: CPSI18n 1.1.0
+===========================================================
+First release built by: madarche at: 2008-11-12T18:10:47
+SVN Tag: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/tags/1.1.0
+Build from: https://svn.nuxeo.org/pub/CPS3/products/CPSI18n/trunk@53041
+
+Requires
+~~~~~~~~
+-
+New features
+~~~~~~~~~~~~
+- Made bin/fix_pos and tests/translations.py respectively produce and assert the
+  use of UTF-8 .po files.
+- Made bin/fix_pos handle the "Preferred-Encodings" metadata header.
+Bug fixes
+~~~~~~~~~
+- Made bin/fix_pos really insert the metadata headers when and where it should
+  in all cases.
+- Made the tests/translations.py tests more accurate on the "Content-Type"
+  metadata header to only match a metadata header.
+- Added a Makefile for generating HTML doc.
+New internal features
+~~~~~~~~~~~~~~~~~~~~~
+- 
+
+===========================================================
 Package: CPSI18n 1.0.4
 ===========================================================
 First release built by: madarche at: 2008-01-18T21:38:10
