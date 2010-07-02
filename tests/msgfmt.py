@@ -130,7 +130,6 @@ class Msgfmt:
 
         # Parse the catalog
         lno = 0
-        #import pdb; pdb.set_trace()
         for l in lines:
             lno += 1
             # If we get a comment line after a msgstr or a line starting with
